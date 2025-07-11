@@ -1,0 +1,48 @@
+:root {
+  /* 主色调 */
+  --color-primary: #3b82f6;
+  --color-primary-dark: #2563eb;
+  --color-primary-light: #60a5fa;
+  --color-primary-10: rgba(59, 130, 246, 0.1);
+
+  /* 背景色 */
+  --color-bg-main: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+
+  /* 文本颜色 */
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #6b7280;
+
+  /* 边框颜色 */
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
+
+  /* 卡片阴影 */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* 深色模式 */
+:root[class~="dark"] {
+  /* 背景色 */
+  --color-bg-main: #111827;
+  --color-bg-secondary: #1f2937;
+  --color-bg-tertiary: #374151;
+
+  /* 文本颜色 */
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #e5e7eb;
+  --color-text-tertiary: #d1d5db;
+
+  /* 边框颜色 */
+  --color-border: #374151;
+  --color-border-light: #1f2937;
+
+  /* 卡片阴影 */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+}

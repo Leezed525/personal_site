@@ -1,0 +1,72 @@
+@import "./colors.css";
+@import "./variables.css";
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* 添加字体定义 */
+@font-face {
+  font-family: "LXWK";
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+  src: url("https://cdn.jsdmirror.com/gh/acanyo/mmm.sd@master/assets/font/lxwk.woff2")
+    format("woff2");
+}
+
+@layer base {
+  html {
+    font-family:
+      "LXWK",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-main text-primary antialiased;
+  }
+
+  /* 移动端优化 */
+  @media (max-width: 768px) {
+    html {
+      font-size: 14px;
+    }
+  }
+
+  /* 移动端点击态优化 */
+  @media (hover: none) {
+    .hover\:scale-105:active {
+      transform: scale(1.02);
+    }
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-block px-6 py-3 bg-primary text-white rounded-lg
+      hover:bg-primary-dark transition-colors duration-300;
+  }
+
+  .btn-secondary {
+    @apply inline-block px-6 py-3 border-2 border-primary text-primary rounded-lg
+      hover:bg-primary hover:text-white transition-colors duration-300;
+  }
+
+  .card {
+    @apply bg-main border border-light rounded-2xl shadow-sm
+      hover:shadow-md transition-all duration-300;
+  }
+}
+
+/* 移动端滚动优化 */
+.smooth-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Handsome | Java后端开发工程师",
+  "short_name": "Handsome",
+  "description": "专注于Java、Spring Boot、微服务等后端技术开发的个人作品集网站",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4F46E5",
+
+  "icons": [
+    {
+      "src": "https://www.mmm.sd/upload/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://www.mmm.sd/upload/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
