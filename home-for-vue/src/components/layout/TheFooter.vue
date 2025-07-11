@@ -50,24 +50,24 @@
           <div class="hidden md:block text-gray-300 dark:text-gray-600">|</div>
 
           <!-- 服务商信息 -->
-          <div class="flex items-center gap-2">
-            <span>本网站由</span>
-            <a
-              :href="footerConfig.provider.link"
-              target="_blank"
-              class="inline-flex items-center hover:text-blue-500 transition-colors group"
-            >
-              <img
-                :src="footerConfig.provider.logo"
-                :alt="`${footerConfig.provider.name} Logo`"
-                class="w-4 h-4 mr-1 group-hover:scale-110 transition-transform"
-              />
-              <span class="group-hover:text-blue-500 transition-colors">
-                {{ footerConfig.provider.name }}
-              </span>
-            </a>
-            <span>{{ footerConfig.provider.text }}</span>
-          </div>
+<!--          <div class="flex items-center gap-2">-->
+<!--            <span>本网站由</span>-->
+<!--            <a-->
+<!--              :href="footerConfig.provider.link"-->
+<!--              target="_blank"-->
+<!--              class="inline-flex items-center hover:text-blue-500 transition-colors group"-->
+<!--            >-->
+<!--              <img-->
+<!--                :src="footerConfig.provider.logo"-->
+<!--                :alt="`${footerConfig.provider.name} Logo`"-->
+<!--                class="w-4 h-4 mr-1 group-hover:scale-110 transition-transform"-->
+<!--              />-->
+<!--              <span class="group-hover:text-blue-500 transition-colors">-->
+<!--                {{ footerConfig.provider.name }}-->
+<!--              </span>-->
+<!--            </a>-->
+<!--            <span>{{ footerConfig.provider.text }}</span>-->
+<!--          </div>-->
         </div>
       </div>
     </div>
