@@ -6,13 +6,19 @@ export const siteConfig = {
   siteDescription:
     "专注于Java、Spring Boot、微服务等后端技术开发的个人作品集网站", // 网站描述
   siteKeywords: "Java开发,Spring Boot,微服务,后端开发,个人作品集,技术博客", // SEO关键词
-  author: "Handsome", // 作者信息
+  author: "Leezed", // 作者信息
 
   // 图片资源配置
   images: {
     logo: "https://www.mmm.sd/upload/logo.png", // 网站Logo
     icon: "https://www.mmm.sd/upload/logo.png", // 网站图标
-    avatar: "https://www.mmm.sd/upload/logo.png", // 个人头像
+    avatar: {
+      // "haimeng": "https://upload.cc/i1/2025/07/11/velMtH.png", //喜多川海梦 快 可以查看图片，不接受外链
+      // "haimeng": "https://cdn.picui.cn/vip/2025/07/11/6870a5bb675b9.png", //喜多川海梦，慢
+      // "haimeng": "https://i0.hdslb.com/bfs/openplatform/007ec656f7b1be0b0259e5162e83fbad559a0c53.jpg", //喜多川海梦，bilibili,好像不接受外链
+      // "haimeng": "https://pic1.imgdb.cn/item/6870a77a58cb8da5c89b6478.jpg", //喜多川海梦，适中
+      "haimeng": "https://tc.z.wiki/autoupload/f/p1xbiZaWAoHAPXZdQlp9qcwntDfOTgKSzo0g8H84d86yl5f0KlZfm6UsKj-HyTuv/20250711/UU0j/527X519/compressed_%E5%96%9C%E5%A4%9A%E5%B7%9D%E6%B5%B7%E6%A2%A6_resized.png", //喜多川海梦，适中
+    },// 个人头像
     ogImage: "https://www.mmm.sd/upload/logo.png", // 社交分享图片
   },
 

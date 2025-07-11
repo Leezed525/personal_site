@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
-import { useRoute } from "vue-router";
+import {ref, onMounted, onUnmounted} from "vue";
+import {useRoute} from "vue-router";
+import {siteConfig} from "@/config/site";
 import ThemeToggle from "@/components/ThemeToggle.vue";
 
 const route = useRoute();
@@ -36,19 +37,19 @@ onUnmounted(() => {
 });
 
 const navItems = [
-  { name: "首页", path: "/" },
+  {name: "首页", path: "/"},
   {
     name: "项目",
     path: "/projects",
     children: [
-      { name: "实用工具", path: "/projects#tools" },
-      { name: "个人导航", path: "/projects#bookmarks" },
-      { name: "个人站点", path: "/projects#sites" },
+      {name: "实用工具", path: "/projects#tools"},
+      {name: "个人导航", path: "/projects#bookmarks"},
+      {name: "个人站点", path: "/projects#sites"},
     ],
   },
-  { name: "技能", path: "/skills" },
-  { name: "博客", path: "/blog" },
-  { name: "联系", path: "/contact" },
+  {name: "技能", path: "/skills"},
+  {name: "博客", path: "/blog"},
+  {name: "联系", path: "/contact"},
 ];
 
 const toggleMenu = () => {
@@ -66,7 +67,7 @@ const toggleMenu = () => {
           <span
             class="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent bg-[length:200%_auto] hover:animate-gradient"
           >
-            Handsome
+            {{ siteConfig.name }}
           </span>
         </router-link>
 
@@ -81,12 +82,12 @@ const toggleMenu = () => {
           >
             {{ item.name }}
           </router-link>
-          <ThemeToggle />
+          <ThemeToggle/>
         </div>
 
         <!-- 移动端菜单按钮 -->
         <div class="md:hidden flex items-center space-x-2">
-          <ThemeToggle />
+          <ThemeToggle/>
           <button
             class="menu-button p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
             @click.stop="toggleMenu"
@@ -154,7 +155,7 @@ const toggleMenu = () => {
 
 .mobile-menu {
   @apply absolute top-full left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm
-    border-t border-gray-200 dark:border-gray-700 shadow-lg;
+  border-t border-gray-200 dark:border-gray-700 shadow-lg;
 }
 
 /* 移动端导航链接悬停效果 */

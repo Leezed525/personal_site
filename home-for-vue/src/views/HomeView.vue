@@ -62,6 +62,7 @@ const structuredData = {
   url: config.siteUrl,
   jobTitle: siteConfig.title,
   description: siteConfig.siteDescription,
+  avatar: siteConfig.images.avatar.haimeng,
 };
 </script>
 
@@ -71,8 +72,11 @@ const structuredData = {
       <div class="max-w-3xl mx-auto text-center">
         <div class="mb-6">
           <div class="relative inline-block avatar-container">
+<!--              :src="structuredData.avatar"-->
+<!--            https://cdn.picui.cn/vip/2025/07/11/6870a5bb675b9.png-->
+<!--            https://upload.cc/i1/2025/07/11/velMtH.png-->
             <img
-              src="https://upload.cc/i1/2025/07/11/velMtH.png"
+              :src="structuredData.avatar"
               alt="头像"
               class="w-24 h-24 md:w-32 md:h-32 rounded-full shadow-xl border-4 border-white dark:border-gray-700 transition-all duration-300 avatar"
             />
@@ -93,7 +97,7 @@ const structuredData = {
               >
             </span>
             <span class="block opacity-0 animate-fade-in-delay-2">
-              我是 <span class="gradient-name">Handsome</span>
+              我是 <span class="gradient-name">{{ structuredData.name }}</span>
             </span>
           </h1>
         </PageTransition>
