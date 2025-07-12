@@ -11,3 +11,7 @@
 成功引入了后端，感谢 [https://gitee.com/ruoyi/RuoYi-Vue](https://gitee.com/ruoyi/RuoYi-Vue) 的开源
 
 使用了环境变量的方式来配置applaication.yml ,避免了敏感数据泄露的问题
+
+## 20250712
+
+完成springboot后端中配置文件分割的工作
