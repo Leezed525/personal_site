@@ -5,7 +5,7 @@ import Tabs from "@/components/ui/Tabs.vue";
 import BookmarksView from "@/views/tools/BookmarksView.vue";
 import {projects} from "@/config/projects";
 import {tools} from "@/config/tools";
-import {tabs} from "@/config/navigation";
+import {blogTabs} from "@/config/navigation";
 
 const activeTab = ref("projects");
 const activeToolId = ref<number | null>(null);
@@ -37,18 +37,25 @@ const getTransitionDelay = (index: number) => `${index * 100}ms`;
 
 <template>
   <div class="container mx-auto px-4 py-8 md:py-12">
-    <h1
-      class="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient"
-    >
-      工具集
-    </h1>
+    <PageTransition>
+      <div class="text-center mb-12">
+        <h1
+          class="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient"
+        >
+          博客文章
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
+          分享技术见解和学习心得，记录编程之路的点点滴滴
+        </p>
+      </div>
+    </PageTransition>
 
     <div class="max-w-6xl mx-auto">
       <!-- 标签页切换 -->
       <div class="mb-6 md:mb-8">
         <Tabs
           v-model="activeTab"
-          :tabs="tabs"
+          :tabs="blogTabs"
           class="justify-center max-w-md mx-auto bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-full p-1.5 md:p-2 shadow-sm flex items-center gap-1.5 md:gap-2 text-sm md:text-base"
           @update:modelValue="handleTabChange"
         />
