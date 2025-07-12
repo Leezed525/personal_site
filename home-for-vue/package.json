@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@vue/runtime-core": "^3.5.17",
     "pinia": "^2.1.7",
     "rss-parser": "^3.13.0",
     "vue": "^3.4.3",

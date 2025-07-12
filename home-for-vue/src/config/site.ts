@@ -24,7 +24,7 @@ export const siteConfig = {
 
   // 个性化配置
   slogan: "生活原本沉闷，但跑起来就有风。", // 个性签名
-  skills: ["Java", "Spring Boot", "MySQL", "Redis", "Docker", "Git"], // 技能标签
+  skills: ["Java", "Rust", "Pytorch", "Spring Boot", "MySQL", "Redis", "Git", "Multi-modal tracking"], // 技能标签
 
   // SEO 相关配置
   language: "zh-CN", // 网站语言

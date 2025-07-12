@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import {ref, onMounted} from "vue";
 import PageTransition from "@/components/PageTransition.vue";
-import { config } from "@/config";
-import { siteConfig } from "@/config/site";
+import {config} from "@/config";
+import {siteConfig} from "@/config/site";
 
-const titles = ref(["Java后端工程师", "热爱编程", "热爱生活"]);
+const titles = ref(["Java后端工程师", "ICCV2025 二作(导师一作)", "热爱编程", "热爱生活"]);
 const currentTitleIndex = ref(0);
 const isWaving = ref(false);
 const slogan = ref("");
@@ -15,7 +15,7 @@ const isTypingComplete = ref(false);
 // 标题切换
 setInterval(() => {
   currentTitleIndex.value = (currentTitleIndex.value + 1) % titles.value.length;
-}, 3000);
+}, 5000);
 
 // 自动触发挥手动画
 const startWaving = () => {
@@ -72,9 +72,9 @@ const structuredData = {
       <div class="max-w-3xl mx-auto text-center">
         <div class="mb-6">
           <div class="relative inline-block avatar-container">
-<!--              :src="structuredData.avatar"-->
-<!--            https://cdn.picui.cn/vip/2025/07/11/6870a5bb675b9.png-->
-<!--            https://upload.cc/i1/2025/07/11/velMtH.png-->
+            <!--              :src="structuredData.avatar"-->
+            <!--            https://cdn.picui.cn/vip/2025/07/11/6870a5bb675b9.png-->
+            <!--            https://upload.cc/i1/2025/07/11/velMtH.png-->
             <img
               :src="structuredData.avatar"
               alt="头像"
@@ -93,7 +93,7 @@ const structuredData = {
               <span
                 class="inline-block ml-2 transform -rotate-12 opacity-0 animate-fade-in-delay"
                 :class="{ 'animate-wave': isWaving }"
-                >👋</span
+              >👋</span
               >
             </span>
             <span class="block opacity-0 animate-fade-in-delay-2">
@@ -117,15 +117,16 @@ const structuredData = {
           <p
             class="text-base md:text-lg text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-loose typewriter"
           >
-            {{ slogan
+            {{
+              slogan
             }}<span
-              class="cursor"
-              :class="{
+            class="cursor"
+            :class="{
                 'cursor-blink': isTypingComplete,
                 'cursor-typing': !isTypingComplete,
               }"
-              >|</span
-            >
+          >|</span
+          >
           </p>
         </PageTransition>
 
@@ -227,9 +228,8 @@ const structuredData = {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
+  transition: opacity 0.8s ease,
+  transform 0.8s ease;
 }
 
 .fade-enter-from {
