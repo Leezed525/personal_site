@@ -12,6 +12,10 @@
     <groupId>com.ruoyi.project</groupId>
     <artifactId>lee-site</artifactId>
 
+    <description>
+        站点模块
+    </description>
+
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>

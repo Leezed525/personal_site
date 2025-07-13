@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.lee.mapper.LeeArticleMapper">
+    
+    <resultMap type="LeeArticle" id="LeeArticleResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="url"    column="url"    />
+        <result property="cover"    column="cover"    />
+        <result property="summary"    column="summary"    />
+        <result property="category"    column="category"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectLeeArticleVo">
+        select id, title, url, cover, summary, category, create_by, create_time, update_by, update_time, status, remark from lee_article
+    </sql>
+
+    <select id="selectLeeArticleList" parameterType="LeeArticle" resultMap="LeeArticleResult">
+        <include refid="selectLeeArticleVo"/>
+        <where>  
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="url != null  and url != ''"> and url = #{url}</if>
+            <if test="cover != null  and cover != ''"> and cover = #{cover}</if>
+            <if test="summary != null  and summary != ''"> and summary = #{summary}</if>
+            <if test="category != null  and category != ''"> and category = #{category}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectLeeArticleById" parameterType="Long" resultMap="LeeArticleResult">
+        <include refid="selectLeeArticleVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertLeeArticle" parameterType="LeeArticle" useGeneratedKeys="true" keyProperty="id">
+        insert into lee_article
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">title,</if>
+            <if test="url != null and url != ''">url,</if>
+            <if test="cover != null">cover,</if>
+            <if test="summary != null">summary,</if>
+            <if test="category != null">category,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="url != null and url != ''">#{url},</if>
+            <if test="cover != null">#{cover},</if>
+            <if test="summary != null">#{summary},</if>
+            <if test="category != null">#{category},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLeeArticle" parameterType="LeeArticle">
+        update lee_article
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="url != null and url != ''">url = #{url},</if>
+            <if test="cover != null">cover = #{cover},</if>
+            <if test="summary != null">summary = #{summary},</if>
+            <if test="category != null">category = #{category},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLeeArticleById" parameterType="Long">
+        delete from lee_article where id = #{id}
+    </delete>
+
+    <delete id="deleteLeeArticleByIds" parameterType="String">
+        delete from lee_article where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
