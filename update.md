@@ -36,7 +36,7 @@
    | title       | varchar(255) | 博客标题 | ❌        |
    | url         | varchar(500) | 博客地址 | ❌        |
    | cover       | varchar(500) | 博客封面 | ✅        |
-   | summary     | varchar(255) | 博客摘要 | ✅        |
+   | summary     | varchar(500) | 博客摘要 | ✅        |
    | category    | varchar(50)  | 分类     | ✅        |
    | create_by   | varchar(64)  | 创建人   | ❌        |
    | create_time | datetime     | 创建时间 | ❌        |
@@ -44,5 +44,4 @@
    | update_time | datetime     | 更新时间 | ✅        |
    | status      | int          | 状态     | ❌        |
    | remark      | varchar(500) | 备注     | ✅        |
-   | delete_flag | int          | 删除标志 | ❌        |
    
