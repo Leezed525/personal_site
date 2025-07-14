@@ -49,7 +49,6 @@ spring:
     restart:
       # 热部署开关
       enabled: true
-  # redis 配置
 
 # MyBatis配置
 #mybatis:

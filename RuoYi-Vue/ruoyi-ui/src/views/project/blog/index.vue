@@ -32,7 +32,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:article:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -43,7 +44,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:article:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -54,7 +56,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:article:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -64,21 +67,22 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:article:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="articleList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="博客标题" align="center" prop="title" />
-      <el-table-column label="博客url" align="center" prop="url" />
-      <el-table-column label="博客封面url" align="center" prop="cover" />
-      <el-table-column label="博客摘要" align="center" prop="summary" />
-      <el-table-column label="博客分类" align="center" prop="category" />
-      <el-table-column label="状态" align="center" prop="status" />
-      <el-table-column label="备注" align="center" prop="remark" />
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="博客标题" align="center" prop="title"/>
+      <el-table-column label="博客url" align="center" prop="url"/>
+      <el-table-column label="博客封面url" align="center" prop="cover"/>
+      <el-table-column label="博客摘要" align="center" prop="summary"/>
+      <el-table-column label="博客分类" align="center" prop="category"/>
+      <el-table-column label="状态" align="center" prop="status"/>
+      <el-table-column label="备注" align="center" prop="remark"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -87,14 +91,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:article:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:article:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -108,25 +114,25 @@
     />
 
     <!-- 添加或修改站点博客列对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="博客标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入博客标题" />
+          <el-input v-model="form.title" placeholder="请输入博客标题"/>
         </el-form-item>
         <el-form-item label="博客url" prop="url">
-          <el-input v-model="form.url" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.url" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="博客封面url" prop="cover">
-          <el-input v-model="form.cover" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.cover" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="博客摘要" prop="summary">
-          <el-input v-model="form.summary" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.summary" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="博客分类" prop="category">
-          <el-input v-model="form.category" placeholder="请输入博客分类" />
+          <el-input v-model="form.category" placeholder="请输入博客分类"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入备注" />
+          <el-input v-model="form.remark" placeholder="请输入备注"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -138,7 +144,15 @@
 </template>
 
 <script>
-import { listArticle, getArticle, delArticle, addArticle, updateArticle } from "@/api/project/article"
+import {listArticle, getArticle, delArticle, addArticle, updateArticle} from "@/api/project/article"
+
+let blog_category = [
+  {name: "全部", value: null},
+  {name: "java", value: "java"},
+  {name: "python", value: "python"},
+  {name: "rust", value: "rust"},
+  {name: "project", value: "project"},
+];
 
 export default {
   name: "Article",
@@ -178,19 +192,19 @@ export default {
       // 表单校验
       rules: {
         title: [
-          { required: true, message: "博客标题不能为空", trigger: "blur" }
+          {required: true, message: "博客标题不能为空", trigger: "blur"}
         ],
         url: [
-          { required: true, message: "博客url不能为空", trigger: "blur" }
+          {required: true, message: "博客url不能为空", trigger: "blur"}
         ],
         createBy: [
-          { required: true, message: "创建人不能为空", trigger: "blur" }
+          {required: true, message: "创建人不能为空", trigger: "blur"}
         ],
         createTime: [
-          { required: true, message: "创建时间不能为空", trigger: "blur" }
+          {required: true, message: "创建时间不能为空", trigger: "blur"}
         ],
         status: [
-          { required: true, message: "状态不能为空", trigger: "change" }
+          {required: true, message: "状态不能为空", trigger: "change"}
         ],
       }
     }
@@ -244,7 +258,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -286,12 +300,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除站点博客列编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除站点博客列编号为"' + ids + '"的数据项？').then(function () {
         return delArticle(ids)
       }).then(() => {
         this.getList()
         this.$modal.msgSuccess("删除成功")
-      }).catch(() => {})
+      }).catch(() => {
+      })
     },
     /** 导出按钮操作 */
     handleExport() {
