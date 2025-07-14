@@ -1,10 +1,11 @@
 package com.ruoyi.lee.domain;
 
 
+import com.ruoyi.common.core.domain.LeeBaseEntity;
 import lombok.Data;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.annotation.Excel;
-import com.ruoyi.common.core.domain.BaseEntity;
+import lombok.experimental.Accessors;
 
 /**
  * 站点博客列对象 lee_article
@@ -15,7 +16,8 @@ import com.ruoyi.common.core.domain.BaseEntity;
 
 @Data
 @TableName("lee_article")
-public class LeeArticle extends BaseEntity
+@Accessors(chain = true)
+public class LeeArticle extends LeeBaseEntity
 {
     private static final long serialVersionUID = 1L;
 

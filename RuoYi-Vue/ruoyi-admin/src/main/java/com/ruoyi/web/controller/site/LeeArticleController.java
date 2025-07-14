@@ -3,6 +3,8 @@ package com.ruoyi.web.controller.site;
 import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.lee.enums.LeeArticleStatusEnums;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +31,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  * @date 2025-07-13
  */
 @RestController
-@RequestMapping("/system/article")
+@RequestMapping("/LeeSite/article")
 public class LeeArticleController extends BaseController
 {
     @Autowired
@@ -78,7 +80,7 @@ public class LeeArticleController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody LeeArticle leeArticle)
     {
-        return toAjax(leeArticleService.saveOrUpdate(leeArticle));
+        return toAjax(leeArticleService.saveOrUpdate(leeArticle.setStatus(LeeArticleStatusEnums.HIDE)));
     }
 
     /**

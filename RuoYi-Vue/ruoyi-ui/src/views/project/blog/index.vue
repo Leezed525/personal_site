@@ -120,19 +120,27 @@
           <el-input v-model="form.title" placeholder="请输入博客标题"/>
         </el-form-item>
         <el-form-item label="博客url" prop="url">
-          <el-input v-model="form.url" type="textarea" placeholder="请输入内容"/>
+          <el-input v-model="form.url" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="博客封面url" prop="cover">
-          <el-input v-model="form.cover" type="textarea" placeholder="请输入内容"/>
+          <el-input v-model="form.cover" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="博客摘要" prop="summary">
           <el-input v-model="form.summary" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="博客分类" prop="category">
-          <el-input v-model="form.category" placeholder="请输入博客分类"/>
+          <!--          <el-input v-model="form.category" placeholder="请输入博客分类"/>-->
+          <el-select v-model="form.category" placeholder="请选择博客分类" clearable>
+            <el-option
+              v-for="item in blog_category"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入备注"/>
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入备注"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -145,14 +153,6 @@
 
 <script>
 import {listArticle, getArticle, delArticle, addArticle, updateArticle} from "@/api/project/article"
-
-let blog_category = [
-  {name: "全部", value: null},
-  {name: "java", value: "java"},
-  {name: "python", value: "python"},
-  {name: "rust", value: "rust"},
-  {name: "project", value: "project"},
-];
 
 export default {
   name: "Article",
@@ -206,7 +206,15 @@ export default {
         status: [
           {required: true, message: "状态不能为空", trigger: "change"}
         ],
-      }
+      },
+      // 博客分类
+      blog_category: [
+        // {name: "全部", value: null},
+        {name: "java", value: "java"},
+        {name: "python", value: "python"},
+        {name: "rust", value: "rust"},
+        {name: "project", value: "project"},
+      ]
     }
   },
   created() {
