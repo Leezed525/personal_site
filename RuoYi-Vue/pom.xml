@@ -37,7 +37,7 @@
         <spring-framework.version>5.3.39</spring-framework.version>
 
         <!--引入mybatis-plus-->
-        <mybatis-plus.version>3.2.0</mybatis-plus.version>
+        <mybatis-plus.version>3.4.0</mybatis-plus.version>
         <!-- 引入lombok -->
         <lombok.version>1.18.12</lombok.version>
     </properties>

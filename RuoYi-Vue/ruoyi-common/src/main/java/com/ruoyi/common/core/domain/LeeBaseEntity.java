@@ -37,14 +37,14 @@ public class LeeBaseEntity implements Serializable {
     /**
      * 更新者
      */
-    @TableField(fill = FieldFill.UPDATE)
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private String updateBy;
 
     /**
      * 更新时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField(fill = FieldFill.UPDATE)
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
 

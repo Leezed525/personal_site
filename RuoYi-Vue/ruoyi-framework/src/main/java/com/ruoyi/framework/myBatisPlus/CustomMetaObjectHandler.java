@@ -26,10 +26,8 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        //填充更新人
-        this.setFieldValByName(UPDATE_BY, SecurityUtils.getUsername(), metaObject);
-        //填充更新时间
-        this.setFieldValByName(UPDATE_TIME, formatDate(metaObject.getSetterType(UPDATE_TIME)), metaObject);
+        this.strictUpdateFill(metaObject, UPDATE_BY, String.class, SecurityUtils.getUsername());
+        this.strictUpdateFill(metaObject, UPDATE_TIME, Date.class, new Date());
     }
 
     /**

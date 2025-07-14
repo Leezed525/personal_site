@@ -77,8 +77,22 @@
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="博客标题" align="center" prop="title"/>
-      <el-table-column label="博客url" align="center" prop="url"/>
-      <el-table-column label="博客封面url" align="center" prop="cover"/>
+      <!-- 博客url -->
+      <el-table-column label="博客url" align="center" prop="url">
+        <template slot-scope="scope">
+          <a :href="scope.row.url" target="_blank" class="link-text">
+            {{ scope.row.url }}
+          </a>
+        </template>
+      </el-table-column>
+      <!-- 博客封面url -->
+      <el-table-column label="博客封面url" align="center" prop="cover">
+        <template slot-scope="scope">
+          <a :href="scope.row.cover" target="_blank" class="link-text">
+            {{ scope.row.cover }}
+          </a>
+        </template>
+      </el-table-column>
       <el-table-column label="博客摘要" align="center" prop="summary"/>
       <el-table-column label="博客分类" align="center" prop="category"/>
       <el-table-column label="状态" align="center" prop="status"/>
