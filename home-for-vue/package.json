@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@iconify/vue": "^5.0.0",
     "@vue/runtime-core": "^3.5.17",
     "axios": "^1.10.0",
     "element-plus": "^2.10.4",

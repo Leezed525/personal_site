@@ -3,6 +3,44 @@ import {ref, onMounted, onUnmounted} from "vue";
 import {useRoute} from "vue-router";
 import {siteConfig} from "@/config/site";
 import ThemeToggle from "@/components/ThemeToggle.vue";
+import LoginModal from "@/components/layout/LoginModal.vue";
+
+/* 登录态 */
+const isLoggedIn = ref(false);
+const currentUser = ref('');
+
+/* 弹窗控制 */
+const showLoginModal = ref(false);
+const modalType = ref<'login' | 'register'>('login');   // login or register
+
+/* 打开/关闭弹窗 */
+const openLogin = () => {
+  modalType.value = 'login';
+  showLoginModal.value = true;
+};
+
+const openRegister = () => {
+  modalType.value = 'register';
+  showLoginModal.value = true;
+};
+
+const closeLoginModal = () => {
+  showLoginModal.value = false;
+};
+
+/* 模拟登录、退出 */
+const handleLogin = (form: { username: string; password: string; captcha: string }) => {
+  // TODO: 真实接口校验
+  currentUser.value = form.username;
+  isLoggedIn.value = true;
+  closeLoginModal();
+};
+
+const logout = () => {
+  isLoggedIn.value = false;
+  currentUser.value = '';
+};
+
 
 const route = useRoute();
 const isMenuOpen = ref(false);
@@ -48,7 +86,7 @@ const navItems = [
     ],
   },
   {name: "技能", path: "/skills"},
-  {name:"新博客", path: "/newblog"},
+  {name: "新博客", path: "/newblog"},
   {name: "博客", path: "/blog"},
   {name: "联系", path: "/contact"},
 ];
@@ -84,6 +122,33 @@ const toggleMenu = () => {
             {{ item.name }}
           </router-link>
           <ThemeToggle/>
+
+          <!-- 桌面端登录状态 -->
+          <div v-if="!isLoggedIn" class="nav-link cursor-pointer" @click="openLogin">
+            登录
+          </div>
+
+          <div v-else class="relative group">
+            <span class="nav-link cursor-default">Hi, {{ currentUser }}</span>
+            <!-- 下拉菜单 -->
+            <div
+              class="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 border
+           border-gray-200 dark:border-gray-700 rounded shadow-lg
+           opacity-0 group-hover:opacity-100 transition pointer-events-none group-hover:pointer-events-auto"
+            >
+              <button
+                class="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                修改密码
+              </button>
+              <button
+                class="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                @click="logout"
+              >
+                退出登录
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- 移动端菜单按钮 -->
@@ -142,10 +207,42 @@ const toggleMenu = () => {
             >
               {{ item.name }}
             </router-link>
+            <!-- 移动端登录状态 -->
+            <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+            <template v-if="!isLoggedIn">
+              <button
+                class="block w-full text-left px-4 py-2 text-base hover:bg-gray-100 dark:hover:bg-gray-800"
+                @click="openLogin"
+              >
+                登录
+              </button>
+            </template>
+            <template v-else>
+              <div class="px-4 py-2 text-base text-gray-600 dark:text-gray-300">
+                Hi, {{ currentUser }}
+              </div>
+              <button
+                class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                修改密码
+              </button>
+              <button
+                class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+                @click="logout"
+              >
+                退出登录
+              </button>
+            </template>
           </div>
         </div>
       </transition>
     </nav>
+    <LoginModal
+      v-if="showLoginModal"
+      v-model:type="modalType"
+      @close="closeLoginModal"
+      @success="handleLogin"
+    />
   </header>
 </template>
 
