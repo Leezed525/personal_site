@@ -60,8 +60,8 @@ spring:
     password: ${ALI_LEE_REDIS_PASSWORD}
     # 连接超时时间
     timeout: 10s
-#    lettuce:
     jedis:
+#    lettuce:
       pool:
         # 连接池中的最小空闲连接
         min-idle: 0

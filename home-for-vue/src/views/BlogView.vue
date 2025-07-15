@@ -1,22 +1,34 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import type { Ref } from "@vue/runtime-core";
-import { fetchBlogPosts } from "../utils/rss";
-import type { BlogPost } from "../types/blog";
+import {ref, computed, onMounted} from "vue";
+import type {Ref} from "@vue/runtime-core";
+import {fetchBlogPosts} from "../utils/rss";
+import type {BlogPost} from "../types/blog";
+import type {ArticleQueryData, ArticleResData} from "../types/article";
+import {listArticle} from "../api/blog/article"
 import PageTransition from "../components/PageTransition.vue";
+import {list} from "postcss";
+import {data} from "autoprefixer";
 
-const posts: Ref<BlogPost[]> = ref([]);
+// const posts: Ref<ArticleResData[]> = ref([]);
+let posts: ArticleResData[] = [];
+let queryData: ArticleQueryData = {
+  description: "",
+  link: "",
+  title: "",
+  pageNum: 1,
+  pageSize: 6
+};
 const loading = ref(true);
 const error = ref<string | null>(null);
 const currentPage = ref(1);
 const postsPerPage = 6;
 
 // 计算总页数
-const totalPages = computed(() => Math.ceil(posts.value.length / postsPerPage));
+const totalPages = computed(() => Math.ceil(posts.length / postsPerPage));
 
 // 添加排序功能
 const sortByDate = computed(() => {
-  return [...posts.value].sort((a, b) => b.date.getTime() - a.date.getTime());
+  return posts.sort((a, b) => b.date.getTime() - a.date.getTime());
 });
 
 // 获取当前页的文章（使用排序后的数组）
@@ -38,7 +50,7 @@ const pageNumbers = computed(() => {
 // 切换页面
 function changePage(page: number) {
   currentPage.value = page;
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({top: 0, behavior: "smooth"});
 }
 
 // 上一页
@@ -58,7 +70,14 @@ function nextPage() {
 onMounted(async () => {
   try {
     loading.value = true;
-    posts.value = await fetchBlogPosts();
+    // posts.value = await fetchBlogPosts();
+    console.log("发出请求");
+    const data = await listArticle(queryData)
+    console.log(data);
+    // listArticle(queryData).then((res)=>{
+    //   console.log("进入then");
+    //   console.log(res, "res");
+    // })
   } catch (e) {
     error.value = e instanceof Error ? e.message : "获取博客文章失败";
   } finally {

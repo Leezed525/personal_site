@@ -75,13 +75,13 @@
 
     <el-table v-loading="loading" :data="articleList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="id" align="center" prop="id"/>
+<!--      <el-table-column label="id" align="center" prop="id" width="50px"/>-->
       <el-table-column label="博客标题" align="center" prop="title"/>
       <!-- 博客url -->
       <el-table-column label="博客url" align="center" prop="url">
         <template slot-scope="scope">
           <a :href="scope.row.url" target="_blank" class="link-text">
-            {{ scope.row.url }}
+            {{ scope.row.url ? scope.row.url.substring(0, 30) + '...' : '' }}
           </a>
         </template>
       </el-table-column>
@@ -89,13 +89,18 @@
       <el-table-column label="博客封面url" align="center" prop="cover">
         <template slot-scope="scope">
           <a :href="scope.row.cover" target="_blank" class="link-text">
-            {{ scope.row.cover }}
+            {{ scope.row.cover ? scope.row.cover.substring(0, 30) + '...' : '' }}
           </a>
         </template>
       </el-table-column>
       <el-table-column label="博客摘要" align="center" prop="summary"/>
       <el-table-column label="博客分类" align="center" prop="category"/>
-      <el-table-column label="状态" align="center" prop="status"/>
+      <el-table-column prop="status" label="状态" width="100">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.site_article_status" :value="scope.row.status"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" align="center" prop="createTime"/>
       <el-table-column label="备注" align="center" prop="remark"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -170,6 +175,7 @@ import {listArticle, getArticle, delArticle, addArticle, updateArticle} from "@/
 
 export default {
   name: "Article",
+  dicts: ['site_article_status'],
   data() {
     return {
       // 遮罩层
@@ -339,3 +345,14 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.link-text {
+  color: #409EFF;
+  text-decoration: none;
+}
+
+.link-text:hover {
+  text-decoration: underline;
+}
+</style>
