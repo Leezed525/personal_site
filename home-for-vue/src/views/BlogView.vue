@@ -2,17 +2,21 @@
 import {ref, computed, onMounted} from "vue";
 import type {Ref} from "@vue/runtime-core";
 import {fetchBlogPosts} from "../utils/rss";
-import type {BlogPost} from "../types/blog";
 import type {ArticleQueryData, ArticleResData} from "../types/article";
 import {listArticle} from "../api/blog/article"
 import PageTransition from "../components/PageTransition.vue";
 import {list} from "postcss";
 import {data} from "autoprefixer";
+import {blogTabs} from "@/config/navigation";
+import Tabs from "@/components/ui/Tabs.vue";
 
-// const posts: Ref<ArticleResData[]> = ref([]);
+
+const activeTab = ref("all");
+
 let posts: ArticleResData[] = [];
 let queryData: ArticleQueryData = {
   summary: "",
+  category:undefined,
   title: "",
   pageNum: 1,
   pageSize: 6
@@ -62,6 +66,17 @@ function nextPage() {
   }
   getList();
 }
+
+// 模拟加载效果
+const handleTabChange = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  if(activeTab.value == "all") {
+    queryData.category = undefined;
+  } else {
+    queryData.category = activeTab.value;
+  }
+  getList();
+};
 
 async function getList(){
   try {
@@ -122,6 +137,17 @@ function formatDate(date: Date): string {
           </p>
         </div>
       </PageTransition>
+
+      <!-- 标签页切换 -->
+      <div class="mb-6 md:mb-8">
+        <Tabs
+          v-model="activeTab"
+          :tabs="blogTabs"
+          class="justify-center max-w-md mx-auto bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-full p-1.5 md:p-2 shadow-sm flex items-center gap-1.5 md:gap-2 text-sm md:text-base"
+          @update:modelValue="handleTabChange"
+        />
+      </div>
+
 
       <!-- 加载状态 -->
       <div v-if="loading" class="flex justify-center items-center py-20">

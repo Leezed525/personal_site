@@ -2,6 +2,7 @@ package com.ruoyi.lee.service.impl;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,9 @@ public class LeeArticleServiceImpl extends ServiceImpl<LeeArticleMapper,LeeArtic
     @Override
     public List<LeeArticle> selectLeeArticleList(LeeArticle leeArticle)
     {
-        QueryWrapper<LeeArticle> queryWrapper = new QueryWrapper<>();
+        LambdaQueryWrapper<LeeArticle> queryWrapper = new LambdaQueryWrapper<LeeArticle>();
+        //如果leeArticle中的category不为空
+        queryWrapper.eq(leeArticle.getCategory() != null, LeeArticle::getCategory, leeArticle.getCategory());
         return baseMapper.selectList(queryWrapper);
     }
 

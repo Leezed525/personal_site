@@ -13,6 +13,6 @@ export const tabs: Tab[] = [
 export const blogTabs: Tab[] = [
   {id: "all", label: "全部", icon: "📄"},
   {id: "java", label: "Java", icon: "☕"},
-  {id: "pytorch", label: "PyTorch", icon: "🐍"},
+  {id: "python", label: "Python", icon: "🐍"},
   {id: "toyprojects", label: "玩具", icon: "🧸"},
 ];

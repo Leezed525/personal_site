@@ -13,7 +13,7 @@ export interface ArticleResData {
 
 export interface ArticleQueryData {
   title: string;
-  description: string;
+  summary: string;
   category?: string;
   image?: string;
   pageNum: number;
