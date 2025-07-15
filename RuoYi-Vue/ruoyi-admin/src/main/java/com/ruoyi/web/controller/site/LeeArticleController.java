@@ -32,8 +32,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  */
 @RestController
 @RequestMapping("/LeeSite/article")
-public class LeeArticleController extends BaseController
-{
+public class LeeArticleController extends BaseController {
     @Autowired
     private ILeeArticleService leeArticleService;
 
@@ -42,8 +41,7 @@ public class LeeArticleController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:article:list')")
     @GetMapping("/list")
-    public TableDataInfo list(LeeArticle leeArticle)
-    {
+    public TableDataInfo list(LeeArticle leeArticle) {
         startPage();
         List<LeeArticle> list = leeArticleService.selectLeeArticleList(leeArticle);
         return getDataTable(list);
@@ -53,10 +51,9 @@ public class LeeArticleController extends BaseController
      * 导出站点博客列列表
      */
     @PreAuthorize("@ss.hasPermi('system:article:export')")
-    @Log(title = "站点博客列", businessType = BusinessType.EXPORT)
+    @Log(title = "站点博客列" , businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, LeeArticle leeArticle)
-    {
+    public void export(HttpServletResponse response, LeeArticle leeArticle) {
         List<LeeArticle> list = leeArticleService.selectLeeArticleList(leeArticle);
         ExcelUtil<LeeArticle> util = new ExcelUtil<LeeArticle>(LeeArticle.class);
         util.exportExcel(response, list, "站点博客列数据");
@@ -67,8 +64,7 @@ public class LeeArticleController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:article:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return success(leeArticleService.getById(id));
     }
 
@@ -76,10 +72,9 @@ public class LeeArticleController extends BaseController
      * 新增站点博客列
      */
     @PreAuthorize("@ss.hasPermi('system:article:add')")
-    @Log(title = "站点博客列", businessType = BusinessType.INSERT)
+    @Log(title = "站点博客列" , businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody LeeArticle leeArticle)
-    {
+    public AjaxResult add(@RequestBody LeeArticle leeArticle) {
         return toAjax(leeArticleService.saveOrUpdate(leeArticle.setStatus(LeeArticleStatusEnums.HIDE)));
     }
 
@@ -87,10 +82,9 @@ public class LeeArticleController extends BaseController
      * 修改站点博客列
      */
     @PreAuthorize("@ss.hasPermi('system:article:edit')")
-    @Log(title = "站点博客列", businessType = BusinessType.UPDATE)
+    @Log(title = "站点博客列" , businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody LeeArticle leeArticle)
-    {
+    public AjaxResult edit(@RequestBody LeeArticle leeArticle) {
         return toAjax(leeArticleService.saveOrUpdate(leeArticle));
     }
 
@@ -98,10 +92,31 @@ public class LeeArticleController extends BaseController
      * 删除站点博客列
      */
     @PreAuthorize("@ss.hasPermi('system:article:remove')")
-    @Log(title = "站点博客列", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @Log(title = "站点博客列" , businessType = BusinessType.DELETE)
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(leeArticleService.removeByIds(Arrays.asList(ids)));
+    }
+
+    /**
+     * 发布站点博客列
+     */
+    @PreAuthorize("@ss.hasPermi('system:article:edit')")
+    @Log(title = "站点博客列" , businessType = BusinessType.PUBLISH)
+    @PutMapping("/publish")
+    public AjaxResult publish(@RequestBody LeeArticle leeArticle) {
+        leeArticle.setStatus(LeeArticleStatusEnums.PUBLISHED);
+        return toAjax(leeArticleService.saveOrUpdate(leeArticle));
+    }
+
+    /**
+     * 隐藏站点博客列
+     */
+    @PreAuthorize("@ss.hasPermi('system:article:edit')")
+    @Log(title = "站点博客列" , businessType = BusinessType.HIDE)
+    @PutMapping("/hide")
+    public AjaxResult hide(@RequestBody LeeArticle leeArticle) {
+        leeArticle.setStatus(LeeArticleStatusEnums.HIDE);
+        return toAjax(leeArticleService.saveOrUpdate(leeArticle));
     }
 }

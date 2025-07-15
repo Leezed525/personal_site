@@ -5,6 +5,7 @@ import java.util.List;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.lee.enums.LeeArticleStatusEnums;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.lee.mapper.LeeArticleMapper;
@@ -31,8 +32,16 @@ public class LeeArticleServiceImpl extends ServiceImpl<LeeArticleMapper,LeeArtic
     public List<LeeArticle> selectLeeArticleList(LeeArticle leeArticle)
     {
         LambdaQueryWrapper<LeeArticle> queryWrapper = new LambdaQueryWrapper<LeeArticle>();
+        return baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<LeeArticle> selectFrontLeeArticleList(LeeArticle leeArticle)
+    {
+        LambdaQueryWrapper<LeeArticle> queryWrapper = new LambdaQueryWrapper<LeeArticle>();
         //如果leeArticle中的category不为空
         queryWrapper.eq(leeArticle.getCategory() != null, LeeArticle::getCategory, leeArticle.getCategory());
+        queryWrapper.eq(LeeArticle::getStatus, LeeArticleStatusEnums.PUBLISHED);
         return baseMapper.selectList(queryWrapper);
     }
 

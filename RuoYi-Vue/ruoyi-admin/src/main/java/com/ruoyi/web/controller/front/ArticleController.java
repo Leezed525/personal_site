@@ -22,7 +22,7 @@ public class ArticleController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo list(LeeArticle leeArticle) {
         startPage();
-        List<LeeArticle> list = leeArticleService.selectLeeArticleList(leeArticle);
+        List<LeeArticle> list = leeArticleService.selectFrontLeeArticleList(leeArticle);
         return getDataTable(list);
     }
 }

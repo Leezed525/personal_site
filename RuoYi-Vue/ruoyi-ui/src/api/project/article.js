@@ -42,3 +42,21 @@ export function delArticle(id) {
     method: 'delete'
   })
 }
+
+
+export function publishArticle(data) {
+  return request({
+    url: '/LeeSite/article/publish/',
+    method: 'put',
+    data: data,
+  })
+}
+
+
+export function hideArticle(data) {
+  return request({
+    url: '/LeeSite/article/hide/',
+    method: 'put',
+    data: data,
+  })
+}

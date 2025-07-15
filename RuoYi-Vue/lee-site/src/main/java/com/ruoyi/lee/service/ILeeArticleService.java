@@ -12,10 +12,19 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ILeeArticleService extends IService<LeeArticle> {
     /**
-     * 查询站点博客列列表
+     * 后台查询站点博客列列表
      *
      * @param leeArticle 站点博客列
      * @return 站点博客列集合
      */
     public List<LeeArticle> selectLeeArticleList(LeeArticle leeArticle);
+
+
+    /**
+     * 前台查询站点博客列列表
+     *
+     * @param leeArticle 站点博客列
+     * @return 站点博客列集合
+     */
+    public List<LeeArticle> selectFrontLeeArticleList(LeeArticle leeArticle);
 }

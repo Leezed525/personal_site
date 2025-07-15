@@ -75,7 +75,7 @@
 
     <el-table v-loading="loading" :data="articleList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-<!--      <el-table-column label="id" align="center" prop="id" width="50px"/>-->
+      <!--      <el-table-column label="id" align="center" prop="id" width="50px"/>-->
       <el-table-column label="博客标题" align="center" prop="title"/>
       <!-- 博客url -->
       <el-table-column label="博客url" align="center" prop="url">
@@ -104,6 +104,24 @@
       <el-table-column label="备注" align="center" prop="remark"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-button
+            v-show="scope.row.status === 0"
+            size="mini"
+            type="text"
+            icon="el-icon-unlock"
+            @click="handlePublish(scope.row)"
+            v-has-permi="['system:article:edit']"
+          >发布
+          </el-button>
+          <el-button
+            v-show="scope.row.status === 1"
+            size="mini"
+            type="text"
+            icon="el-icon-lock"
+            @click="handleHide(scope.row)"
+            v-has-permi="['system:article:edit']"
+          >隐藏
+          </el-button>
           <el-button
             size="mini"
             type="text"
@@ -171,7 +189,7 @@
 </template>
 
 <script>
-import {listArticle, getArticle, delArticle, addArticle, updateArticle} from "@/api/project/article"
+import {listArticle, getArticle, delArticle, addArticle, updateArticle, publishArticle,hideArticle} from "@/api/project/article"
 
 export default {
   name: "Article",
@@ -295,6 +313,30 @@ export default {
       this.open = true
       this.title = "添加站点博客列"
     },
+
+    // 隐藏函数
+    handleHide(row) {
+      const id = row.id
+      this.$modal.confirm('是否确认隐藏站点博客标题为"' + row.title + '"的数据项？').then(function () {
+        return hideArticle({id})
+      }).then(() => {
+        this.getList()
+        this.$modal.msgSuccess("隐藏成功")
+      }).catch(() => {
+      });
+    },
+
+    //发布函数
+    handlePublish(row) {
+      const id = row.id
+      this.$modal.confirm('是否确认发布站点博客标题为"' + row.title + '"的数据项？').then(function () {
+        return publishArticle({id})
+      }).then(() => {
+        this.getList()
+        this.$modal.msgSuccess("发布成功")
+      }).catch(() => {
+      });
+    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset()
@@ -328,7 +370,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除站点博客列编号为"' + ids + '"的数据项？').then(function () {
+      this.$modal.confirm('是否确认删除站点博客标题为"' + row.title + '"的数据项？').then(function () {
         return delArticle(ids)
       }).then(() => {
         this.getList()
