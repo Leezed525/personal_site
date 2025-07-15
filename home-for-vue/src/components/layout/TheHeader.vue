@@ -94,6 +94,8 @@ const navItems = [
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
+
+const showUserMenu = ref(false);
 </script>
 
 <template>
@@ -128,26 +130,54 @@ const toggleMenu = () => {
             登录
           </div>
 
-          <div v-else class="relative group">
-            <span class="nav-link cursor-default">Hi, {{ currentUser }}</span>
-            <!-- 下拉菜单 -->
-            <div
-              class="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 border
-           border-gray-200 dark:border-gray-700 rounded shadow-lg
-           opacity-0 group-hover:opacity-100 transition pointer-events-none group-hover:pointer-events-auto"
+          <!-- 桌面端登录状态（原来那块） -->
+          <!-- 桌面端登录状态（整块替换） -->
+          <div v-else class="relative">
+            <!-- 用户名触发区 -->
+            <span
+              class="nav-link cursor-default select-none"
+              @mouseenter="showUserMenu = true"
             >
-              <button
-                class="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+              Hi, {{ currentUser }}
+            </span>
+
+            <!-- 下拉菜单 -->
+            <transition
+              enter-active-class="duration-150 ease-out"
+              enter-from-class="opacity-0 scale-95"
+              enter-to-class="opacity-100 scale-100"
+              leave-active-class="duration-100 ease-in"
+              leave-from-class="opacity-100 scale-100"
+              leave-to-class="opacity-0 scale-95"
+            >
+              <div
+                v-show="showUserMenu"
+                class="absolute right-0 top-full mt-2 w-36 origin-top-right
+             bg-white dark:bg-gray-800
+             border border-gray-200 dark:border-gray-700
+             rounded-lg shadow-xl z-20"
+                @mouseenter="showUserMenu = true"
+                @mouseleave="showUserMenu = false"
               >
-                修改密码
-              </button>
-              <button
-                class="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
-                @click="logout"
-              >
-                退出登录
-              </button>
-            </div>
+                <button
+                  class="block w-full text-left px-3 py-2 text-sm
+               text-gray-700 dark:text-gray-200
+               hover:bg-gray-100 dark:hover:bg-gray-700
+               first:rounded-t-lg last:rounded-b-lg"
+                >
+                  修改密码
+                </button>
+                <button
+                  class="block w-full text-left px-3 py-2 text-sm
+               text-gray-700 dark:text-gray-200
+               hover:bg-gray-100 dark:hover:bg-gray-700
+               first:rounded-t-lg last:rounded-b-lg"
+                  @click="logout"
+                >
+                  退出登录
+                </button>
+              </div>
+            </transition>
           </div>
         </div>
 
