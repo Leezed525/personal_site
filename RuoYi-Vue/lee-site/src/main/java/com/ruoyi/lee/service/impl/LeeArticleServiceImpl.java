@@ -15,13 +15,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
  * 站点博客列Service业务层处理
- * 
+ *
  * @author ruoyi
  * @date 2025-07-13
  */
 @Service
-public class LeeArticleServiceImpl extends ServiceImpl<LeeArticleMapper,LeeArticle> implements ILeeArticleService
-{
+public class LeeArticleServiceImpl extends ServiceImpl<LeeArticleMapper, LeeArticle> implements ILeeArticleService {
     /**
      * 查询站点博客列列表
      *
@@ -29,15 +28,15 @@ public class LeeArticleServiceImpl extends ServiceImpl<LeeArticleMapper,LeeArtic
      * @return 站点博客列
      */
     @Override
-    public List<LeeArticle> selectLeeArticleList(LeeArticle leeArticle)
-    {
-        LambdaQueryWrapper<LeeArticle> queryWrapper = new LambdaQueryWrapper<LeeArticle>();
-        return baseMapper.selectList(queryWrapper);
+    public List<LeeArticle> selectLeeArticleList(LeeArticle leeArticle) {
+        LambdaQueryWrapper<LeeArticle> qw = new LambdaQueryWrapper<LeeArticle>();
+        qw.eq(leeArticle.getCategory() != null, LeeArticle::getCategory, leeArticle.getCategory());
+        qw.like(leeArticle.getTitle() != null, LeeArticle::getTitle, leeArticle.getTitle());
+        return baseMapper.selectList(qw);
     }
 
     @Override
-    public List<LeeArticle> selectFrontLeeArticleList(LeeArticle leeArticle)
-    {
+    public List<LeeArticle> selectFrontLeeArticleList(LeeArticle leeArticle) {
         LambdaQueryWrapper<LeeArticle> queryWrapper = new LambdaQueryWrapper<LeeArticle>();
         //如果leeArticle中的category不为空
         queryWrapper.eq(leeArticle.getCategory() != null, LeeArticle::getCategory, leeArticle.getCategory());

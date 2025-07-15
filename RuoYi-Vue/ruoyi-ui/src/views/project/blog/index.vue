@@ -10,12 +10,25 @@
         />
       </el-form-item>
       <el-form-item label="博客分类" prop="category">
-        <el-input
+        <el-select
           v-model="queryParams.category"
-          placeholder="请输入博客分类"
+          placeholder="请选择博客分类"
           clearable
-          @keyup.enter.native="handleQuery"
-        />
+          @change="handleQuery"
+        >
+          <el-option
+            v-for="item in blog_category"
+            :key="item.value"
+            :label="item.value"
+            :value="item.value"
+          />
+        </el-select>
+        <!--        <el-input-->
+        <!--          v-model="queryParams.category"-->
+        <!--          placeholder="请输入博客分类"-->
+        <!--          clearable-->
+        <!--          @keyup.enter.native="handleQuery"-->
+        <!--        />-->
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -189,7 +202,15 @@
 </template>
 
 <script>
-import {listArticle, getArticle, delArticle, addArticle, updateArticle, publishArticle,hideArticle} from "@/api/project/article"
+import {
+  listArticle,
+  getArticle,
+  delArticle,
+  addArticle,
+  updateArticle,
+  publishArticle,
+  hideArticle
+} from "@/api/project/article"
 
 export default {
   name: "Article",
