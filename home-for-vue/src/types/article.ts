@@ -1,9 +1,10 @@
 export interface ArticleResData {
   id: number;
   title: string;
-  link: string;
-  date: Date;
-  description: string;
+  url: string;
+  cover: string;
+  createTime: Date;
+  summary: string;
   category?: string;
   image?: string;
 }
@@ -12,7 +13,6 @@ export interface ArticleResData {
 
 export interface ArticleQueryData {
   title: string;
-  link: string;
   description: string;
   category?: string;
   image?: string;

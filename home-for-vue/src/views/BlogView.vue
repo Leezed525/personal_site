@@ -12,8 +12,7 @@ import {data} from "autoprefixer";
 // const posts: Ref<ArticleResData[]> = ref([]);
 let posts: ArticleResData[] = [];
 let queryData: ArticleQueryData = {
-  description: "",
-  link: "",
+  summary: "",
   title: "",
   pageNum: 1,
   pageSize: 6
@@ -22,26 +21,19 @@ const loading = ref(true);
 const error = ref<string | null>(null);
 const currentPage = ref(1);
 const postsPerPage = 6;
+const tmpImageIndex = 1;
+
 
 // 计算总页数
-const totalPages = computed(() => Math.ceil(posts.length / postsPerPage));
+let totalPages = 0;
+//总文章数
+let totalArticles = 0;
 
-// 添加排序功能
-const sortByDate = computed(() => {
-  return posts.sort((a, b) => b.date.getTime() - a.date.getTime());
-});
-
-// 获取当前页的文章（使用排序后的数组）
-const currentPosts = computed(() => {
-  const start = (currentPage.value - 1) * postsPerPage;
-  const end = start + postsPerPage;
-  return sortByDate.value.slice(start, end);
-});
 
 // 页码数组
 const pageNumbers = computed(() => {
   const pages = [];
-  for (let i = 1; i <= totalPages.value; i++) {
+  for (let i = 1; i <= totalPages; i++) {
     pages.push(i);
   }
   return pages;
@@ -55,34 +47,54 @@ function changePage(page: number) {
 
 // 上一页
 function prevPage() {
+  //请求上一页
   if (currentPage.value > 1) {
     changePage(currentPage.value - 1);
   }
+  getList();
 }
 
 // 下一页
 function nextPage() {
-  if (currentPage.value < totalPages.value) {
+  //请求下一页
+  if (currentPage.value < totalPages) {
     changePage(currentPage.value + 1);
   }
+  getList();
 }
 
-onMounted(async () => {
+async function getList(){
   try {
     loading.value = true;
-    // posts.value = await fetchBlogPosts();
-    console.log("发出请求");
-    const data = await listArticle(queryData)
-    console.log(data);
-    // listArticle(queryData).then((res)=>{
-    //   console.log("进入then");
-    //   console.log(res, "res");
-    // })
+    queryData.pageNum = currentPage.value;
+    const data: any = await listArticle(queryData);
+    //获取总页数
+    totalArticles = data.total;
+    totalPages = Math.ceil(data.total / postsPerPage);
+    posts = data.rows;
+    posts = fillImageUrl(posts);
+    console.log(posts);
   } catch (e) {
     error.value = e instanceof Error ? e.message : "获取博客文章失败";
   } finally {
     loading.value = false;
   }
+}
+
+
+//填充图片
+function fillImageUrl(posts: ArticleResData[]): ArticleResData[] {
+  posts.forEach(post => {
+    if (!post.cover) {
+      post.cover = "https://picsum.photos/seed/${tmpImageIndex + i}/800/400";
+    }
+  })
+  return posts;
+}
+
+
+onMounted(async () => {
+  getList();
 });
 
 // 格式化日期
@@ -133,12 +145,12 @@ function formatDate(date: Date): string {
       <div v-else>
         <!-- 文章统计 -->
         <div class="text-center mb-8 text-gray-600 dark:text-gray-400">
-          共 {{ posts.length }} 篇文章
+          共 {{ totalArticles }} 篇文章
         </div>
 
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <PageTransition
-            v-for="post in currentPosts"
+            v-for="post in posts"
             :key="post.link"
             name="fade"
             class="h-full"
@@ -146,6 +158,13 @@ function formatDate(date: Date): string {
             <article
               class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden"
             >
+              <!-- 文章封面 -->
+              <img
+                v-if="post.cover"
+                :src="post.cover"
+                :alt="post.title"
+                class="w-full h-48 object-cover"
+              />
               <div class="p-6 flex-1">
                 <div class="flex items-center mb-4 space-x-2">
                   <span
@@ -154,17 +173,17 @@ function formatDate(date: Date): string {
                     {{ post.category }}
                   </span>
                   <time
-                    :datetime="post.date.toISOString()"
+                    :datetime="post.createTime"
                     class="text-sm text-tertiary"
                   >
-                    {{ formatDate(post.date) }}
+                    {{ post.createTime }}
                   </time>
                 </div>
                 <h2
                   class="text-xl font-bold mb-3 hover:text-primary transition-colors line-clamp-2"
                 >
                   <a
-                    :href="post.link"
+                    :href="post.url"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -173,12 +192,12 @@ function formatDate(date: Date): string {
                 </h2>
                 <p
                   class="text-secondary line-clamp-3 mb-4 text-sm leading-relaxed"
-                  v-html="post.description"
+                  v-html="post.summary"
                 ></p>
               </div>
               <div class="px-6 py-4 bg-secondary border-t border-light">
                 <a
-                  :href="post.link"
+                  :href="post.url"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="inline-flex items-center text-primary hover:text-primary-dark transition-colors group"
