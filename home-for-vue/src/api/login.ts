@@ -17,3 +17,7 @@ export const getInfo = () => {
   return axios.get<any>("/getInfo")
 }
 
+export const logout = () => {
+  return axios.post<any>("/logout")
+}
+

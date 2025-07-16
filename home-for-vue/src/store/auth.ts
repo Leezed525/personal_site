@@ -2,7 +2,8 @@
 import {defineStore} from 'pinia'
 import {ref, computed} from 'vue'
 import request from '../utils/request'   // 你封装的 axios 实例
-import {login, getInfo} from "../api/login"
+import {login, getInfo, logout} from "../api/login"
+import {ElMessage} from 'element-plus'
 
 export const useAuthStore = defineStore(
   'auth',
@@ -26,10 +27,10 @@ export const useAuthStore = defineStore(
     const fetchUser = async () => {
       if (!token.value) return
       try {
-        const data:any = await getInfo();
+        const data: any = await getInfo();
         console.log(data);
         //获取关键信息 用户名，昵称
-        const userInfo:any = {
+        const userInfo: any = {
           email: data.user.email,
           username: data.user.userName,
           nickname: data.user.nickName,
@@ -38,7 +39,7 @@ export const useAuthStore = defineStore(
         console.log(user.value);
       } catch (e) {
         // token 失效、被顶下线等
-        logout()
+        logoutUser()
       }
     }
 
@@ -47,13 +48,17 @@ export const useAuthStore = defineStore(
       const res: any = await login(username, password, captcha, uuid);
       setToken(res.token)
       await fetchUser()          // 马上拿用户信息
+      ElMessage.success('登陆成功');
     }
 
     // 4️⃣ 退出
-    const logout = () => {
+    const logoutUser = () => {
       token.value = ''
       user.value = null
       localStorage.removeItem('token')
+      logout().then(() => {
+        ElMessage.success('退出成功');
+      })
       // 可跳转到 /login
     }
 
@@ -66,7 +71,7 @@ export const useAuthStore = defineStore(
       user,
       isLoggedIn,
       login: loginUser,
-      logout,
+      logout: logoutUser,
       fetchUser,
     }
   },

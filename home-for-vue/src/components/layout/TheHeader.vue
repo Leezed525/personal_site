@@ -11,8 +11,6 @@ import {storeToRefs} from 'pinia'
 const auth = useAuthStore();
 
 /* 登录态 */
-// const isLoggedIn = ref(false);
-// const currentUser = ref('');
 const {isLoggedIn, user} = storeToRefs(auth)
 
 /* 弹窗控制 */
@@ -36,14 +34,12 @@ const closeLoginModal = () => {
 
 /* 模拟登录、退出 */
 const handleLogin = () => {
-  currentUser.value = auth.user.username;
   isLoggedIn.value = true;
   closeLoginModal();
 };
 
 const logout = () => {
-  isLoggedIn.value = false;
-  currentUser.value = '';
+  auth.logout();
 };
 
 
