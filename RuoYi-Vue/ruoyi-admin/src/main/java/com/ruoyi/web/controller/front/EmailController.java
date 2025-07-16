@@ -28,12 +28,12 @@ public class EmailController extends BaseController {
     /**
      * 2. 校验图形验证码 + 发送邮件
      */
-    @PostMapping("/Code")
+    @PostMapping("/code")
     public AjaxResult send(@RequestParam String email, @RequestParam String imgCode, @RequestParam String uuid, HttpServletRequest request) {
         //判断邮箱是否已经存在
         SysUser user = new SysUser();
         user.setEmail(email);
-        if (userService.checkEmailUnique(user)) {
+        if (!userService.checkEmailUnique(user)) {
             return AjaxResult.error("邮箱已存在");
         }
         return emailService.sendEmailCode(email, imgCode, uuid);

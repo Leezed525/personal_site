@@ -2,8 +2,9 @@
 import {ref, onMounted, computed, watch, nextTick} from 'vue';
 import {getCaptcha} from "../../api/captcha";
 import {LoginReqBody} from "../../types/login";
-import {login} from "../../api/login";
-import {useAuthStore} from "../../store/auth"
+import {login, getEmailCode} from "../../api/login";
+import {useAuthStore} from "../../store/auth";
+import {ElMessage} from "element-plus";
 
 
 /* ------------------用户状态 --------------------- */
@@ -85,16 +86,26 @@ const emailCoolDown = ref(0)
 const sendEmailCode = async () => {
   if (!canSendEmailCode.value) return
 
-  try {
-    await fetch('/api/sendEmailCode', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        email: registerForm.value.email,
-        captcha: registerForm.value.captchaCode,
-        uuid: uuid.value
-      })
+
+  getEmailCode(activeForm.value.captchaCode, uuid.value, registerForm.value.email)
+    .then((res) => {
+      console.log(res);
+      ElMessage.success('验证码已发送，请查收邮箱')
+      // 冷却 60 秒
+      emailCoolDown.value = 60
+      const timer = setInterval(() => {
+        emailCoolDown.value--
+        if (emailCoolDown.value <= 0) clearInterval(timer)
+      }, 1000)
     })
+    .catch((e: any) => {
+      console.log(e);
+      ElMessage.error(e?.response?.data?.msg || '发送失败')
+      refreshCaptcha()          // ✅ 图形验证码错误时刷新
+    });
+
+
+  try {
     ElMessage.success('验证码已发送，请查收邮箱')
 
     // 冷却 60 秒
@@ -107,7 +118,7 @@ const sendEmailCode = async () => {
     ElMessage.error(e?.response?.data?.msg || '发送失败')
     refreshCaptcha()          // ✅ 图形验证码错误时刷新
   }
-}
+};
 
 
 /* 注册提交 */

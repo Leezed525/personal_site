@@ -14,6 +14,7 @@ import com.ruoyi.common.utils.ip.IpUtils;
 //import com.ruoyi.framework.manager.factory.AsyncFactory;
 //import org.aspectj.weaver.loadtime.Aj;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,12 @@ public class EmailService {
 
     private final static int EMAIL_CODE_EXPIRE = 10; //单词邮箱验证码时间为10分钟
 
+    @Value("${spring.mail.username}")
+    private String emailFrom; // 发件人邮箱地址
+
+//    @Value("${spring.mail.password}")
+//    private String emailPassword;
+
 
     public AjaxResult sendEmailCode(String email, String imgCode, String uuid) {
         //第一步校验图形验证码是否正确
@@ -40,7 +47,7 @@ public class EmailService {
         //发验证码前置校验
         long interval = emailSendPreCheck();
         if (interval > 0) {
-            return AjaxResult.success().put("lastTime" , interval);
+            return AjaxResult.success().put("lastTime", interval);
         }
         //第二步校验邮箱格式
         if (!EmailUtils.isEmail(email)) {
@@ -80,7 +87,7 @@ public class EmailService {
         message.setTo(to);                // 收件人邮箱
         message.setSubject(subject);      // 邮件主题
         message.setText(text);            // 邮件内容
-        message.setFrom("your_email@qq.com"); // 发件人邮箱
+        message.setFrom(emailFrom); // 发件人邮箱
         mailSender.send(message);         // 发送邮件
     }
 

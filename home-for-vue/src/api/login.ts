@@ -21,3 +21,16 @@ export const logout = () => {
   return axios.post<any>("/logout")
 }
 
+export const getEmailCode = (imgCode: string, uuid: string, email: string) => {
+  const data = {
+    imgCode,
+    uuid,
+    email,
+  }
+  return axios.post<any>("/front/email/code", data);
+};
+
+export const register = () => {
+
+}
+
