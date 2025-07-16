@@ -9,5 +9,11 @@ export const login = (username: string, password: string, code: string, uuid: st
     code: code,
     uuid: uuid,
   }
-  return axios.post<any[]>("/login", data)
+  return axios.post<any>("/login", data)
 }
+
+
+export const getInfo = () => {
+  return axios.get<any>("/getInfo")
+}
+

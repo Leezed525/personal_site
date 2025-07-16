@@ -111,6 +111,10 @@ public class SysLoginService
     public void validateCaptcha(String username, String code, String uuid)
     {
         boolean captchaEnabled = configService.selectCaptchaEnabled();
+        System.out.println("进入validateCaptcha方法！！！！！！");
+        System.out.println("username: " + username);
+        System.out.println("code: " + code);
+        System.out.println("uuid: " + uuid);
         if (captchaEnabled)
         {
             String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");

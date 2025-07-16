@@ -4,6 +4,10 @@ import {useRoute} from "vue-router";
 import {siteConfig} from "@/config/site";
 import ThemeToggle from "@/components/ThemeToggle.vue";
 import LoginModal from "@/components/layout/LoginModal.vue";
+import {useAuthStore} from "@/store/auth";
+
+// 用户信息
+const auth = useAuthStore();
 
 /* 登录态 */
 const isLoggedIn = ref(false);
@@ -29,9 +33,8 @@ const closeLoginModal = () => {
 };
 
 /* 模拟登录、退出 */
-const handleLogin = (form: { username: string; password: string; captcha: string }) => {
-  // TODO: 真实接口校验
-  currentUser.value = form.username;
+const handleLogin = () => {
+  currentUser.value = auth.user.username;
   isLoggedIn.value = true;
   closeLoginModal();
 };

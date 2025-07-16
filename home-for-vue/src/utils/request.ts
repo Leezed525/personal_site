@@ -45,7 +45,7 @@ class RequestHttp {
      */
     this.service.interceptors.request.use((config: AxiosRequestConfig) => {
         const token = localStorage.getItem('token') || ''
-        config.headers = {...config.headers, 'x-access-token': token}
+        config.headers = {...config.headers, 'Authorization': 'Bearer ' + token}
         return config
       },
       (error: AxiosError) => {
@@ -61,7 +61,6 @@ class RequestHttp {
     this.service.interceptors.response.use(
       (response: AxiosResponse) => {
         const {data, config} = response; // 解构
-        console.log(data);
         if (data.code === RequestEnums.OVERDUE) {
           // 登录信息失效，应跳转到登录页面，并清空本地的token
           localStorage.setItem('token', '');
@@ -106,7 +105,6 @@ class RequestHttp {
 
   // 常用方法封装
   get<T>(url: string, params?: object): Promise<ResultData<T>> {
-    console.log("进入get请求体")
     return this.service.get(url, {params});
   }
 

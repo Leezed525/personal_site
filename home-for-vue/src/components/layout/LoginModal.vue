@@ -3,18 +3,16 @@ import {ref, onMounted, computed, watch, nextTick} from 'vue';
 import {getCaptcha} from "../../api/captcha";
 import {LoginReqBody} from "../../types/login";
 import {login} from "../../api/login";
+import {useAuthStore} from "../../store/auth"
+
+
+/* ------------------用户状态 --------------------- */
+const auth = useAuthStore();
 
 /* ---------------- props & emit ---------------- */
 const emit = defineEmits<{
   close: [];
-  success: [payload: {
-    username: string;
-    password: string;
-    captcha: string;
-    email?: string;
-    code?: string;
-    nickname?: string
-  }];
+  success: [];
 }>();
 const type = defineModel<'login' | 'register'>('type', {required: true});
 
@@ -73,25 +71,31 @@ const sendEmailCode = () => {
 
 /* ---------------- 提交 ---------------- */
 const loading = ref(false);
+
+const closeLoading = () => {
+  setTimeout(() => {
+    loading.value = false;
+    emit('close');
+  }, 600);
+}
+
 const submit = () => {
   loading.value = true;
   if (type.value === "login") {
-    loginUser();
+    const {username, password, captchaCode} = activeForm.value;
+    auth.login(username, password, captchaCode, uuid.value).then(() => {
+      //登录成功
+      console.log('登录成功');
+      emit('success')
+      closeLoading();
+    }).catch(() => {
+      // 登录失败处理
+      console.error('登录失败')
+      closeLoading();
+    });
   }
-  loading.value = false;
-  // setTimeout(() => {
-  //   emit('success', activeForm.value);
-  //   loading.value = false;
-  // }, 600);
-};
 
-async function loginUser() {
-  //获取登录表单数据
-  const {username, password, captchaCode} = activeForm.value;
-  const res: any = await login(username, password, captchaCode, uuid.value);
-  const token = res.token;
-  console.log(res);
-}
+};
 
 
 onMounted(fetchCaptcha);
