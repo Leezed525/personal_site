@@ -86,38 +86,44 @@ const emailCoolDown = ref(0)
 const sendEmailCode = async () => {
   if (!canSendEmailCode.value) return
 
+  const email = registerForm.value.email;
 
   getEmailCode(activeForm.value.captchaCode, uuid.value, registerForm.value.email)
     .then((res) => {
       console.log(res);
-      ElMessage.success('验证码已发送，请查收邮箱')
-      // 冷却 60 秒
-      emailCoolDown.value = 60
-      const timer = setInterval(() => {
-        emailCoolDown.value--
-        if (emailCoolDown.value <= 0) clearInterval(timer)
-      }, 1000)
+      if (res.code === 200) {
+        ElMessage.success('验证码已发送，请查收邮箱');
+        //默认冷却60秒
+        emailCoolDown.value = 60;
+        if (res.lastTime) {
+          emailCoolDown.value = res.lastTime;  // 如果接口返回了冷却时间，使用它
+          ElMessage.warning("请稍后再请求");
+        }
+        const timer = setInterval(() => {
+          emailCoolDown.value--
+          if (emailCoolDown.value <= 0) clearInterval(timer)
+        }, 1000)
+      }
     })
     .catch((e: any) => {
       console.log(e);
-      ElMessage.error(e?.response?.data?.msg || '发送失败')
       refreshCaptcha()          // ✅ 图形验证码错误时刷新
     });
 
 
-  try {
-    ElMessage.success('验证码已发送，请查收邮箱')
-
-    // 冷却 60 秒
-    emailCoolDown.value = 60
-    const timer = setInterval(() => {
-      emailCoolDown.value--
-      if (emailCoolDown.value <= 0) clearInterval(timer)
-    }, 1000)
-  } catch (e: any) {
-    ElMessage.error(e?.response?.data?.msg || '发送失败')
-    refreshCaptcha()          // ✅ 图形验证码错误时刷新
-  }
+  // try {
+  //   ElMessage.success('验证码已发送，请查收邮箱')
+  //
+  //   // 冷却 60 秒
+  //   emailCoolDown.value = 60
+  //   const timer = setInterval(() => {
+  //     emailCoolDown.value--
+  //     if (emailCoolDown.value <= 0) clearInterval(timer)
+  //   }, 1000)
+  // } catch (e: any) {
+  //   ElMessage.error(e?.response?.data?.msg || '发送失败')
+  //   refreshCaptcha()          // ✅ 图形验证码错误时刷新
+  // }
 };
 
 

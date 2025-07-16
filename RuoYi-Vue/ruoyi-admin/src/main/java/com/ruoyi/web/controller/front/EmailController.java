@@ -4,12 +4,10 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.framework.web.service.EmailService;
+import com.ruoyi.lee.domain.EmailCodeDTO;
 import com.ruoyi.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,7 +27,10 @@ public class EmailController extends BaseController {
      * 2. 校验图形验证码 + 发送邮件
      */
     @PostMapping("/code")
-    public AjaxResult send(@RequestParam String email, @RequestParam String imgCode, @RequestParam String uuid, HttpServletRequest request) {
+    public AjaxResult send(@RequestBody EmailCodeDTO emailCodeDTO, HttpServletRequest request) {
+        String email = emailCodeDTO.getEmail();
+        String imgCode = emailCodeDTO.getImgCode();
+        String uuid = emailCodeDTO.getUuid();
         //判断邮箱是否已经存在
         SysUser user = new SysUser();
         user.setEmail(email);
