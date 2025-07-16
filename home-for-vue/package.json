@@ -23,6 +23,7 @@
     "@vue/runtime-core": "^3.5.17",
     "axios": "^1.10.0",
     "element-plus": "^2.10.4",
+    "pina": "^0.20.2204228",
     "pinia": "^2.1.7",
     "rss-parser": "^3.13.0",
     "vue": "^3.4.3",

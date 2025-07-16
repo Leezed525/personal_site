@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import {ref, onMounted, computed, watch, nextTick} from 'vue';
 import {getCaptcha} from "../../api/captcha";
+import {LoginReqBody} from "../../types/login";
+import {login} from "../../api/login";
 
 /* ---------------- props & emit ---------------- */
 const emit = defineEmits<{
@@ -17,14 +19,14 @@ const emit = defineEmits<{
 const type = defineModel<'login' | 'register'>('type', {required: true});
 
 /* ---------------- 表单数据 ---------------- */
-const loginForm = ref({username: '', password: '', captcha: ''});
+const loginForm = ref({username: '', password: '', captchaCode: ''});
 const registerForm = ref({
   username: '',
   password: '',
   nickname: '',
   email: '',
   emailCode: '',
-  captcha: '',
+  captchaCode: '',
 });
 
 /* 当前正在使用的表单（计算属性） */
@@ -51,7 +53,7 @@ const fetchCaptcha = async () => {
     console.error('获取验证码失败', e);
   }
 };
-const uuid = ref<String | null>();
+const uuid = ref<string | null>();
 const captcha = ref<Captcha | null>(null);
 const refreshCaptcha = () => fetchCaptcha();
 
@@ -73,11 +75,23 @@ const sendEmailCode = () => {
 const loading = ref(false);
 const submit = () => {
   loading.value = true;
-  setTimeout(() => {
-    emit('success', activeForm.value);
-    loading.value = false;
-  }, 600);
+  if (type.value === "login") {
+    loginUser();
+  }
+  loading.value = false;
+  // setTimeout(() => {
+  //   emit('success', activeForm.value);
+  //   loading.value = false;
+  // }, 600);
 };
+
+async function loginUser() {
+  //获取登录表单数据
+  const {username, password, captchaCode} = activeForm.value;
+  const res: any = await login(username, password, captchaCode, uuid.value);
+  const token = res.token;
+  console.log(res);
+}
 
 
 onMounted(fetchCaptcha);
@@ -206,7 +220,7 @@ onMounted(fetchCaptcha);
               </label>
               <div class="flex items-center space-x-2">
                 <input
-                  v-model="activeForm.captcha"
+                  v-model="activeForm.captchaCode"
                   type="text"
                   required
                   class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
@@ -226,6 +240,7 @@ onMounted(fetchCaptcha);
               type="submit"
               :disabled="loading"
               class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold transition"
+              @click="handleSubmit"
             >
               {{ loading ? '处理中...' : type === 'login' ? '登录' : '注册' }}
             </button>
@@ -233,9 +248,7 @@ onMounted(fetchCaptcha);
 
           <!-- 切换登录 / 注册 -->
           <p class="text-center text-sm text-gray-500 dark:text-gray-400">
-            {{
-              type === 'login' ? '还没有账号？' : '已有账号？'
-            }}
+            {{ type === 'login' ? '还没有账号？' : '已有账号？' }}
             <span
               class="font-semibold text-blue-600 cursor-pointer hover:underline"
               @click="type = type === 'login' ? 'register' : 'login'"

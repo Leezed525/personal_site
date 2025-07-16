@@ -44,13 +44,9 @@ class RequestHttp {
      * token校验(JWT) : 接受服务器返回的token,存储到vuex/pinia/本地储存当中
      */
     this.service.interceptors.request.use((config: AxiosRequestConfig) => {
-        const token = localStorage.getItem('token') || '';
-        return {
-          ...config,
-          headers: {
-            'x-access-token': token, // 请求头中携带token信息
-          }
-        }
+        const token = localStorage.getItem('token') || ''
+        config.headers = {...config.headers, 'x-access-token': token}
+        return config
       },
       (error: AxiosError) => {
         // 请求报错
@@ -65,6 +61,7 @@ class RequestHttp {
     this.service.interceptors.response.use(
       (response: AxiosResponse) => {
         const {data, config} = response; // 解构
+        console.log(data);
         if (data.code === RequestEnums.OVERDUE) {
           // 登录信息失效，应跳转到登录页面，并清空本地的token
           localStorage.setItem('token', '');
@@ -75,7 +72,7 @@ class RequestHttp {
         }
         // 全局错误信息拦截（防止下载文件得时候返回数据流，没有code，直接报错）
         if (data.code && data.code !== RequestEnums.SUCCESS) {
-          ElMessage.error(data); // 此处也可以使用组件提示报错信息
+          ElMessage.error(data.msg); // 此处也可以使用组件提示报错信息
           return Promise.reject(data)
         }
         return data;

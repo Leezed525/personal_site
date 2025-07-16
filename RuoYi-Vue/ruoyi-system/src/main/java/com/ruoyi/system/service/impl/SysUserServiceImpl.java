@@ -257,6 +257,7 @@ public class SysUserServiceImpl implements ISysUserService {
         user.setDeptId(SITE_USER_DEPT_ID);
         user.setRoleId(SITE_USER_ROLE_ID);
         //邮箱验证码校验
+        return 1;
     }
 
     /**

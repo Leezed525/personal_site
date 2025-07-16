@@ -129,9 +129,7 @@ const showUserMenu = ref(false);
           <div v-if="!isLoggedIn" class="nav-link cursor-pointer" @click="openLogin">
             登录
           </div>
-
-          <!-- 桌面端登录状态（原来那块） -->
-          <!-- 桌面端登录状态（整块替换） -->
+          <!-- 桌面端登录状态 -->
           <div v-else class="relative">
             <!-- 用户名触发区 -->
             <span
@@ -152,18 +150,12 @@ const showUserMenu = ref(false);
             >
               <div
                 v-show="showUserMenu"
-                class="absolute right-0 top-full mt-2 w-36 origin-top-right
-             bg-white dark:bg-gray-800
-             border border-gray-200 dark:border-gray-700
-             rounded-lg shadow-xl z-20"
+                class="absolute right-0 top-full mt-2 w-36 origin-top-right bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-20"
                 @mouseenter="showUserMenu = true"
                 @mouseleave="showUserMenu = false"
               >
                 <button
-                  class="block w-full text-left px-3 py-2 text-sm
-               text-gray-700 dark:text-gray-200
-               hover:bg-gray-100 dark:hover:bg-gray-700
-               first:rounded-t-lg last:rounded-b-lg"
+                  class="block w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg"
                 >
                   修改密码
                 </button>
