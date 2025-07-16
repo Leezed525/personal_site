@@ -44,7 +44,6 @@ interface Captcha {
 const fetchCaptcha = async () => {
   try {
     const res: any = await getCaptcha();
-    console.log(res);
     captcha.value = "data:image/gif;base64," + res.img;
     uuid.value = res.uuid;
   } catch (e) {
@@ -85,12 +84,10 @@ const submit = () => {
     const {username, password, captchaCode} = activeForm.value;
     auth.login(username, password, captchaCode, uuid.value).then(() => {
       //登录成功
-      console.log('登录成功');
       emit('success')
       closeLoading();
     }).catch(() => {
       // 登录失败处理
-      console.error('登录失败')
       closeLoading();
     });
   }

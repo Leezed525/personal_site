@@ -5,13 +5,15 @@ import {siteConfig} from "@/config/site";
 import ThemeToggle from "@/components/ThemeToggle.vue";
 import LoginModal from "@/components/layout/LoginModal.vue";
 import {useAuthStore} from "@/store/auth";
+import {storeToRefs} from 'pinia'
 
 // 用户信息
 const auth = useAuthStore();
 
 /* 登录态 */
-const isLoggedIn = ref(false);
-const currentUser = ref('');
+// const isLoggedIn = ref(false);
+// const currentUser = ref('');
+const {isLoggedIn, user} = storeToRefs(auth)
 
 /* 弹窗控制 */
 const showLoginModal = ref(false);
@@ -69,6 +71,8 @@ const handleClickOutside = (event: MouseEvent) => {
 onMounted(() => {
   window.addEventListener("click", handleClickOutside);
   window.addEventListener("keydown", handleKeydown);
+
+
 });
 
 // 在组件卸载时移除事件监听，防止内存泄漏
@@ -139,7 +143,12 @@ const showUserMenu = ref(false);
               class="nav-link cursor-default select-none"
               @mouseenter="showUserMenu = true"
             >
-              Hi, {{ currentUser }}
+              <div v-if="auth.user">
+                Hi, {{ auth.user.nickname }}
+              </div>
+              <div v-else>
+                正在加载…
+              </div>
             </span>
 
             <!-- 下拉菜单 -->
@@ -244,7 +253,12 @@ const showUserMenu = ref(false);
             </template>
             <template v-else>
               <div class="px-4 py-2 text-base text-gray-600 dark:text-gray-300">
-                Hi, {{ currentUser }}
+                <div v-if="auth.user">
+                  Hi, {{ auth.user.nickname }}
+                </div>
+                <div v-else>
+                  正在加载…
+                </div>
               </div>
               <button
                 class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
