@@ -57,16 +57,88 @@ const refreshCaptcha = () => fetchCaptcha();
 /* 切 tab 时刷新验证码 */
 watch(type, fetchCaptcha);   // 登录↔注册切换时也重新拉取
 
-/* ---------------- 发送邮箱验证码节流 ---------------- */
-const emailCoolDown = ref(0);
-const sendEmailCode = () => {
-  // 真实接口：/api/sendEmailCode  {email}
-  emailCoolDown.value = 60;
-  const timer = setInterval(() => {
-    emailCoolDown.value--;
-    if (emailCoolDown.value <= 0) clearInterval(timer);
-  }, 1000);
-};
+/* ---------------- 邮箱验证码相关 ---------------- */
+const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+/* 实时邮箱格式错误提示 */
+const emailError = ref('')
+watch(
+  () => registerForm.value.email,
+  (val) => {
+    if (!val) {
+      emailError.value = ''
+    } else if (!emailReg.test(val)) {
+      emailError.value = '请输入正确的邮箱格式'
+    } else {
+      emailError.value = ''
+    }
+  },
+  {immediate: true}
+)
+
+/* 发送按钮是否可用：邮箱格式正确 + 图形验证码非空 */
+const canSendEmailCode = computed(
+  () => type.value === 'register' && emailReg.test(registerForm.value.email) && activeForm.value.captchaCode.trim() !== ''
+)
+
+/* 真正调接口 + 冷却倒计时 */
+const emailCoolDown = ref(0)
+const sendEmailCode = async () => {
+  if (!canSendEmailCode.value) return
+
+  try {
+    await fetch('/api/sendEmailCode', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        email: registerForm.value.email,
+        captcha: registerForm.value.captchaCode,
+        uuid: uuid.value
+      })
+    })
+    ElMessage.success('验证码已发送，请查收邮箱')
+
+    // 冷却 60 秒
+    emailCoolDown.value = 60
+    const timer = setInterval(() => {
+      emailCoolDown.value--
+      if (emailCoolDown.value <= 0) clearInterval(timer)
+    }, 1000)
+  } catch (e: any) {
+    ElMessage.error(e?.response?.data?.msg || '发送失败')
+    refreshCaptcha()          // ✅ 图形验证码错误时刷新
+  }
+}
+
+
+/* 注册提交 */
+const handleRegister = async () => {
+  loading.value = true
+  try {
+    await fetch('/api/register', {               // ✅ 替换成你的 request.post(...)
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        username: registerForm.value.username,
+        password: registerForm.value.password,
+        nickname: registerForm.value.nickname,
+        email: registerForm.value.email,
+        emailCode: registerForm.value.emailCode,
+        captcha: registerForm.value.captchaCode,
+        uuid: uuid.value
+      })
+    })
+    ElMessage.success('注册成功！')
+    // 注册完成自动切到登录页
+    type.value = 'login'
+    refreshCaptcha()
+    closeLoading()
+  } catch (e: any) {
+    ElMessage.error(e?.response?.data?.msg || '注册失败')
+    refreshCaptcha()
+    closeLoading()
+  }
+}
+
 
 /* ---------------- 提交 ---------------- */
 const loading = ref(false);
@@ -86,14 +158,12 @@ const submit = () => {
       //登录成功
       emit('success')
       closeLoading();
-    }).catch(() => {
-      // 登录失败处理
-      closeLoading();
-    });
+    }).catch(() => closeLoading());
+  } else {
+
   }
 
 };
-
 
 onMounted(fetchCaptcha);
 
@@ -176,44 +246,6 @@ onMounted(fetchCaptcha);
               />
             </div>
 
-            <!-- 邮箱（注册） -->
-            <div v-if="type === 'register'">
-              <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                邮箱
-              </label>
-              <div class="flex items-center space-x-2">
-                <input
-                  v-model.trim="registerForm.email"
-                  type="email"
-                  required
-                  class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                  placeholder="example@mail.com"
-                />
-                <button
-                  type="button"
-                  :disabled="emailCoolDown > 0"
-                  class="shrink-0 px-3 py-2 text-sm rounded-lg bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white transition"
-                  @click="sendEmailCode"
-                >
-                  {{ emailCoolDown ? `${emailCoolDown}s` : '发送验证码' }}
-                </button>
-              </div>
-            </div>
-
-            <!-- 邮箱验证码（注册） -->
-            <div v-if="type === 'register'">
-              <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                邮箱验证码
-              </label>
-              <input
-                v-model.trim="registerForm.emailCode"
-                type="text"
-                required
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                placeholder="6位数字"
-              />
-            </div>
-
             <!-- 图形验证码 -->
             <div>
               <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -235,6 +267,49 @@ onMounted(fetchCaptcha);
                 />
               </div>
             </div>
+
+            <!-- 邮箱（注册） -->
+            <div v-if="type === 'register'">
+              <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                邮箱
+              </label>
+              <div class="flex items-center space-x-2">
+                <input
+                  v-model.trim="registerForm.email"
+                  type="email"
+                  required
+                  class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                  placeholder="example@mail.com"
+                />
+                <button
+                  type="button"
+                  :disabled="!canSendEmailCode || emailCoolDown > 0"
+                  :class="[canSendEmailCode && !emailCoolDown? 'bg-blue-500 hover:bg-blue-600':'bg-gray-300 cursor-not-allowed']"
+                  class="shrink-0 px-3 py-2 text-sm rounded-lg text-white transition"
+                  @click="sendEmailCode"
+                >
+                  {{ emailCoolDown ? `${emailCoolDown}s` : '发送验证码' }}
+                </button>
+              </div>
+              <!-- ✅ 新增邮箱格式提示 -->
+              <p v-if="emailError" class="text-xs text-red-500 mt-1">{{ emailError }}</p>
+            </div>
+
+
+            <!-- 邮箱验证码（注册） -->
+            <div v-if="type === 'register'">
+              <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                邮箱验证码
+              </label>
+              <input
+                v-model.trim="registerForm.emailCode"
+                type="text"
+                required
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                placeholder="6位数字"
+              />
+            </div>
+
 
             <!-- 提交按钮 -->
             <button

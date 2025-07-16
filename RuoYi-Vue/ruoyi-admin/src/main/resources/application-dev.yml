@@ -61,7 +61,7 @@ spring:
     # 连接超时时间
     timeout: 10s
     jedis:
-#    lettuce:
+      #    lettuce:
       pool:
         # 连接池中的最小空闲连接
         min-idle: 0
@@ -71,6 +71,19 @@ spring:
         max-active: 8
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: ${LEE_SEND_EMAIL}
+    password: ${LEE_SEND_EMAIL_PASSWORD}
+    default-encoding: UTF-8          # 默认的邮件编码
+    properties:
+      mail:
+        smtp:
+          auth: true                 # 是否需要认证
+          starttls:
+            enable: true             # 是否启用 TLS 加密
+            required: true           # 是否强制使用 TLS
 
 # token配置
 token:

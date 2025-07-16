@@ -2,15 +2,24 @@ package com.ruoyi.common.constant;
 
 /**
  * 缓存的key 常量
- * 
+ *
  * @author ruoyi
  */
-public class CacheConstants
-{
+public class CacheConstants {
     /**
      * 登录用户 redis key
      */
     public static final String LOGIN_TOKEN_KEY = "login_tokens:";
+
+    /**
+     * 邮箱验证码(防止滥用)
+     */
+    public static final String EMAIL_CODE_INTERVAL_KEY = "Email_code_interval:";
+
+    /**
+     * 邮箱结果验证码
+     */
+    public static final String EMAIL_CODE_KEY = "Email_code:";
 
     /**
      * 验证码 redis key

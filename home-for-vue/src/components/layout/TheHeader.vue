@@ -67,8 +67,6 @@ const handleClickOutside = (event: MouseEvent) => {
 onMounted(() => {
   window.addEventListener("click", handleClickOutside);
   window.addEventListener("keydown", handleKeydown);
-
-
 });
 
 // 在组件卸载时移除事件监听，防止内存泄漏

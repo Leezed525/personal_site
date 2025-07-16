@@ -45,7 +45,9 @@ class RequestHttp {
      */
     this.service.interceptors.request.use((config: AxiosRequestConfig) => {
         const token = localStorage.getItem('token') || ''
-        config.headers = {...config.headers, 'Authorization': 'Bearer ' + token}
+        if (token) {
+          config.headers = {...config.headers, 'Authorization': 'Bearer ' + token};
+        }
         return config
       },
       (error: AxiosError) => {
