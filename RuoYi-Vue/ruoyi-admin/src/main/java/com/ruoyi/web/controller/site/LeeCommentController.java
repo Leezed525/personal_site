@@ -3,6 +3,8 @@ package com.ruoyi.web.controller.site;
 import java.util.List;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.lee.enums.LeeCommentStatusEnums;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -90,6 +92,23 @@ public class LeeCommentController extends BaseController
     public AjaxResult edit(@RequestBody LeeComment leeComment)
     {
         return toAjax(leeCommentService.saveOrUpdate(leeComment));
+    }
+
+    @PreAuthorize("@ss.hasPermi('project:comment:edit')")
+    @Log(title = "留言板", businessType = BusinessType.UPDATE)
+    @PutMapping("/audit/success")
+    public AjaxResult auditSuccess(@RequestBody LeeComment leeComment) {
+        // 审核通过
+        leeComment.setStatus(LeeCommentStatusEnums.PUBLISHED.getStatus());
+        return toAjax(leeCommentService.updateById(leeComment));
+    }
+    @PreAuthorize("@ss.hasPermi('project:comment:edit')")
+    @Log(title = "留言板", businessType = BusinessType.UPDATE)
+    @PutMapping("/audit/fail")
+    public AjaxResult auditFail(@RequestBody LeeComment leeComment) {
+        // 审核通过
+        leeComment.setStatus(LeeCommentStatusEnums.REJECTED.getStatus());
+        return toAjax(leeCommentService.updateById(leeComment));
     }
 
     /**

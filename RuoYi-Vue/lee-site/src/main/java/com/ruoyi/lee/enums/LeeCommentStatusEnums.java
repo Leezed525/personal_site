@@ -8,7 +8,7 @@ public enum LeeCommentStatusEnums {
     PUBLISHED(1L),
 
     //审核失败
-    AUDIT_FAILED(2L),
+    REJECTED(2L),
     ;
 
     private final Long status;

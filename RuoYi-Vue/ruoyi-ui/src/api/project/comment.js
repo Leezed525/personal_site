@@ -35,6 +35,24 @@ export function updateComment(data) {
   })
 }
 
+// 审核通过
+export function auditCommentSuccess(data) {
+  return request({
+    url: '/LeeSite/comment/audit/success',
+    method: 'put',
+    data: data
+  })
+}
+
+// 审核不通过
+export function auditCommentFail(data) {
+  return request({
+    url: '/LeeSite/comment/audit/fail',
+    method: 'put',
+    data: data
+  })
+}
+
 // 删除留言板
 export function delComment(id) {
   return request({
@@ -42,3 +60,4 @@ export function delComment(id) {
     method: 'delete'
   })
 }
+

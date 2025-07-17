@@ -22,13 +22,6 @@
             :label="item.label"
             :value="item.value"
           />
-
-          <!--        <el-input-->
-          <!--          v-model="queryParams.root"-->
-          <!--          placeholder="请输入是否根留言"-->
-          <!--          clearable-->
-          <!--          @keyup.enter.native="handleQuery"-->
-          <!--        />-->
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -89,21 +82,29 @@
 
     <el-table v-loading="loading" :data="commentList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="主键" align="center" prop="id"/>
       <el-table-column label="上级留言" align="center" prop="preId"/>
       <el-table-column label="留言内容" align="center" prop="content"/>
-      <el-table-column label="状态" align="center" prop="status"/>
-      <el-table-column label="是否根留言" align="center" prop="root"/>
+      <el-table-column prop="status" label="状态" width="100">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.site_comment_status" :value="scope.row.status"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否根留言" align="center" prop="root">
+        <template slot-scope="scope">
+          {{ scope.row.root === '1' ? '是' : '否' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="留言人" align="center" prop="createBy"/>
+      <el-table-column label="留言时间" align="center" prop="createTime"/>
       <el-table-column label="备注" align="center" prop="remark"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['project:comment:edit']"
-          >修改
+            icon="el-icon-view"
+            @click="handleView(scope.row)"
+          >查看
           </el-button>
           <el-button
             size="mini"
@@ -157,14 +158,54 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!--查看弹窗-->
+    <!-- 查看留言 -->
+    <el-dialog
+      title="查看留言"
+      :visible.sync="viewOpen"
+      width="600px"
+      append-to-body>
+      <el-form label-width="100px" class="view-form">
+        <el-form-item label="上级留言">{{ viewForm.preId || '无' }}</el-form-item>
+        <el-form-item label="留言内容">
+          <div v-html="viewForm.content" class="content-box"></div>
+        </el-form-item>
+        <el-form-item label="是否根留言">{{ viewForm.root === '1' ? '是' : '否' }}</el-form-item>
+        <el-form-item label="留言人">{{ viewForm.createBy }}</el-form-item>
+        <el-form-item label="留言时间">{{ viewForm.createTime }}</el-form-item>
+        <el-form-item label="状态">
+          <dict-tag :options="dict.type.site_comment_status" :value="viewForm.status"/>
+        </el-form-item>
+        <el-form-item label="备注">{{ viewForm.remark || '-' }}</el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          type="success"
+          icon="el-icon-check"
+          :loading="auditLoading"
+          @click="auditComment(1)"
+        >审核通过
+        </el-button>
+        <el-button
+          type="danger"
+          icon="el-icon-close"
+          :loading="auditLoading"
+          @click="auditComment(2)"
+        >审核不通过
+        </el-button>
+        <el-button @click="viewOpen=false">关 闭</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import {listComment, getComment, delComment, addComment, updateComment} from "@/api/project/comment"
+import {listComment, getComment, delComment, addComment, updateComment,auditCommentSuccess,auditCommentFail} from "@/api/project/comment"
 
 export default {
   name: "Comment",
+  dicts: ['site_comment_status'],
   data() {
     return {
       // 遮罩层
@@ -227,7 +268,11 @@ export default {
           label: "否",
           value: "0",
         }
-      ]
+      ],
+      viewOpen: false,
+      viewForm: {},
+      auditLoading: false    // 审核按钮 loading
+
     }
   },
   created() {
@@ -329,6 +374,30 @@ export default {
       }).catch(() => {
       })
     },
+    handleView(row) {
+      this.viewForm = {...row};   // 浅拷贝即可，无需深拷贝
+      this.viewOpen = true;
+    },
+    auditComment(status) {
+      this.auditLoading = true;
+      const data = {id: this.viewForm.id};
+      if (status === 1) {
+        auditCommentSuccess(data).then(() => {
+          this.$modal.msgSuccess('审核通过');
+        }).catch(() => {
+        });
+      }else{
+        auditCommentFail(data).then(() => {
+          this.$modal.msgSuccess('审核不通过');
+        }).catch(() => {
+        });
+      }
+      // 1. 关闭弹窗 2. 刷新列表
+      this.viewOpen = false;
+      this.auditLoading = false;
+      this.getList();
+    },
+
     /** 导出按钮操作 */
     handleExport() {
       this.download('project/comment/export', {
@@ -338,3 +407,14 @@ export default {
   }
 }
 </script>
+
+<style>
+.view-form .content-box {
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  padding: 8px 12px;
+  background: #fafafa;
+  min-height: 80px;
+  line-height: 1.6;
+}
+</style>
