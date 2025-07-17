@@ -31,6 +31,7 @@ export const useAuthStore = defineStore(
         console.log(data);
         //获取关键信息 用户名，昵称
         const userInfo: any = {
+          id: data.user.userId,
           email: data.user.email,
           username: data.user.userName,
           nickname: data.user.nickName,

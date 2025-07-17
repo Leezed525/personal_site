@@ -1,19 +1,22 @@
 package com.ruoyi.lee.enums;
 
-public class LeeArticleStatusEnums {
 
-    /**
-     * 隐藏
-     */
-    public static final Long HIDE = 0L;
+public enum LeeArticleStatusEnums {
 
-    /**
-     * 公开
-     */
-    public static final Long PUBLISHED = 1L;
+    HIDE(0L),
+    PUBLISHED(1L),
+    DELETED(-1L);
 
-    /**
-     * 删除
-     */
-    public static final Long DELETED = -1L;
+    private final Long status;
+
+
+    LeeArticleStatusEnums(Long status) {
+        this.status = status;
+    }
+
+    public Long getStatus() {
+        return status;
+    }
 }
+
+

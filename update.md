@@ -129,11 +129,13 @@ lettuce 连接池的 采用非阻塞式IO，在高并发的情况下表现良好
    | pre_id      | int          | 上级留言   | ✅        |
    | content     | varchar(500) | 留言内容   | ❌        |
    | status      | int          | 状态       | ❌        |
-   | reply       | varchar(500) | 回复内容   | ✅        |
-   | reply_time  | datetime     | 回复时间   | ✅        |
    | root        | char(1)      | 是否根留言 | ❌        |
+   | author_id   | int          | 留言人ID   | ❌        |
    | create_by   | varchar(64)  | 创建人     | ❌        |
    | create_time | datetime     | 创建时间   | ❌        |
    | update_by   | varchar(64)  | 更新人     | ✅        |
    | update_time | datetime     | 更新时间   | ✅        |
    | remark      | varchar(500) | 备注       | ✅        |
+
+
+完成添加留言的功能

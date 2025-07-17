@@ -4,7 +4,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.framework.web.service.EmailService;
-import com.ruoyi.lee.domain.EmailCodeDTO;
+import com.ruoyi.lee.domain.DTO.EmailCodeDTO;
 import com.ruoyi.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

@@ -1,6 +1,7 @@
 package com.ruoyi.lee.service;
 
 import java.util.List;
+
 import com.ruoyi.lee.domain.LeeComment;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -18,4 +19,6 @@ public interface ILeeCommentService extends IService<LeeComment> {
      * @return 留言板集合
      */
     public List<LeeComment> selectLeeCommentList(LeeComment leeComment);
+
+    List<LeeComment> selectFrontLeeCommentList(LeeComment leeComment);
 }

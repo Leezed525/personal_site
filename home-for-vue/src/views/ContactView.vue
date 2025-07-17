@@ -1,7 +1,40 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import {onMounted, ref} from "vue";
 import emailjs from "@emailjs/browser";
-import { emailConfig } from "@/config/email";
+import {emailConfig} from "@/config/email";
+import {fetchBlogPosts} from "@/utils/rss";
+import PageTransition from "@/components/PageTransition.vue";
+import {listArticle} from "@/api/blog/article";
+import {ArticleQueryData, ArticleResData} from "@/types/article";
+import {ElMessage} from "element-plus";
+import {addComment} from "@/api/contact/comment";
+
+
+import {useAuthStore} from '@/store/auth'
+
+const auth = useAuthStore()
+
+const showLeaveMessage = ref(false)   //  控制留言弹窗
+const messageText = ref('')           //  留言内容
+
+const loading = ref(true);
+const error = ref<string | null>(null);
+
+let posts: ArticleResData[] = [];
+let queryData: ArticleQueryData = {
+  summary: "",
+  title: "",
+  pageNum: 1,
+  pageSize: 6
+};
+const currentPage = ref(1);
+const postsPerPage = 6;
+const tmpImageIndex = 1;
+
+// 计算总页数
+let totalPages = 0;
+//总文章数
+let totalArticles = 0;
 
 interface FormData {
   name: string;
@@ -24,62 +57,71 @@ const validateEmail = (email: string) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
-const handleSubmit = async () => {
-  submitStatus.value = null;
+const handleLeaveMessage = () => {
+  if (!auth.isLoggedIn) {
+    // 没登录
+    ElMessage.warning('请先登录后再留言')
+    return
+  }
+  // 已登录 → 打开弹窗
+  messageText.value = ''
+  showLeaveMessage.value = true
+}
 
-  if (!formData.value.name.trim()) {
-    alert("请输入您的姓名");
-    return;
-  }
-  if (!formData.value.email.trim() || !validateEmail(formData.value.email)) {
-    alert("请输入有效的邮箱地址");
-    return;
-  }
-  if (!formData.value.message.trim()) {
-    alert("请输入留言内容");
-    return;
+const submitLeaveMessage = async () => {
+  if (!messageText.value.trim()) return
+
+  //组装数据
+  const data = {
+    content: messageText.value,
+    authorId: auth.user.id,
   }
 
+  addComment(data).then(() => {
+    ElMessage.success('留言发表成功')
+    showLeaveMessage.value = false
+  }).catch((e: any) => {
+    ElMessage.error(e?.response?.data?.msg || '发表失败')
+  })
+
+
+  // try {
+  //   await request.post('/api/message', {content: messageText.value})
+  //   ElMessage.success('留言发表成功')
+  //   showLeaveMessage.value = false
+  // } catch (e: any) {
+  //   ElMessage.error(e?.response?.data?.msg || '发表失败')
+  // }
+};
+
+// 获取博客文章
+async function getList() {
   try {
-    isSubmitting.value = true;
-
-    const result = await emailjs.send(
-      emailConfig.serviceId,
-      emailConfig.templateId,
-      {
-        from_name: formData.value.name,
-        from_email: formData.value.email,
-        subject: formData.value.subject,
-        message: formData.value.message,
-        reply_to: formData.value.email,
-      },
-      emailConfig.publicKey,
-    );
-
-    submitStatus.value = "success";
-    formData.value = {
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    };
-  } catch (error: any) {
-    submitStatus.value = "error";
-    alert(`发送失败: ${error.text || error.message || "请稍后重试"}`);
+    loading.value = true;
+    queryData.pageNum = currentPage.value;
+    const data: any = await listArticle(queryData);
+    //获取总页数
+    totalArticles = data.total;
+    totalPages = Math.ceil(data.total / postsPerPage);
+    posts = data.rows;
+    console.log(posts);
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : "获取博客文章失败";
   } finally {
-    isSubmitting.value = false;
+    loading.value = false;
   }
-};
+}
 
-// 添加跳转函数
-const goToGuestbook = () => {
-  window.open(import.meta.env.VITE_GUESTBOOK_URL, "_blank");
-};
+onMounted(async () => {
+  getList();
+});
 </script>
 
 <template>
   <div class="container mx-auto px-4 py-8 md:py-12">
-    <div class="max-w-2xl mx-auto">
+    <!--    <div class="max-w-2xl mx-auto">-->
+    +
+    <div class="max-w-5xl mx-auto">
       <h1
         class="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-8 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient"
       >
@@ -99,10 +141,10 @@ const goToGuestbook = () => {
           您也可以在留言板上留下您的想法
         </p>
         <button
-          @click="goToGuestbook"
+          @click="handleLeaveMessage"
           class="inline-flex items-center px-5 py-2 md:px-6 md:py-2.5 text-sm md:text-base font-medium rounded-full text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-sm"
         >
-          <span class="mr-2">前往留言板</span>
+          <span class="mr-2">留言</span>
           <svg
             class="w-4 h-4 md:w-5 md:h-5"
             viewBox="0 0 20 20"
@@ -117,183 +159,218 @@ const goToGuestbook = () => {
         </button>
       </div>
 
-      <!-- 表单部分 -->
-      <form
-        @submit.prevent="handleSubmit"
-        class="space-y-4 md:space-y-6 bg-white dark:bg-gray-800 rounded-lg md:rounded-xl shadow-sm p-4 md:p-8"
-      >
-        <!-- 表单字段 -->
-        <div class="space-y-4">
-          <div>
-            <label
-              for="name"
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              姓名 <span class="text-red-500">*</span>
-            </label>
-            <input
-              id="name"
-              v-model="formData.name"
-              type="text"
-              required
-              class="w-full px-3 md:px-4 py-2 text-sm md:text-base rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-colors"
-              :disabled="isSubmitting"
-            />
-          </div>
+      <div v-if="loading" class="flex justify-center items-center py-20">
+        <div
+          class="animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent"
+        ></div>
+      </div>
 
-          <div>
-            <label
-              for="email"
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              邮箱 <span class="text-red-500">*</span>
-            </label>
-            <input
-              id="email"
-              v-model="formData.email"
-              type="email"
-              required
-              class="w-full px-3 md:px-4 py-2 text-sm md:text-base rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-colors"
-              :disabled="isSubmitting"
-            />
-          </div>
+      <!-- 错误提示 -->
+      <div v-else-if="error" class="text-center py-20">
+        <p class="text-red-500 text-lg mb-4">{{ error }}</p>
+        <button
+          @click="fetchBlogPosts"
+          class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-all transform hover:scale-105"
+        >
+          重试
+        </button>
+      </div>
 
-          <div>
-            <label
-              for="subject"
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+      <!-- 博客列表 -->
+      <div v-else>
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <PageTransition
+            v-for="post in posts"
+            :key="post.link"
+            name="fade"
+            class="h-full"
+          >
+            <article
+              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden"
             >
-              主题
-            </label>
-            <input
-              id="subject"
-              v-model="formData.subject"
-              type="text"
-              class="w-full px-3 md:px-4 py-2 text-sm md:text-base rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-colors"
-              :disabled="isSubmitting"
-            />
-          </div>
-
-          <div>
-            <label
-              for="message"
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              留言 <span class="text-red-500">*</span>
-            </label>
-            <textarea
-              id="message"
-              v-model="formData.message"
-              rows="5"
-              required
-              class="w-full px-3 md:px-4 py-2 text-sm md:text-base rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-colors resize-none"
-              :disabled="isSubmitting"
-            ></textarea>
-          </div>
+              <div class="p-6 flex-1">
+                <div class="flex items-center mb-4 space-x-2">
+                  <time
+                    :datetime="post.createTime"
+                    class="text-sm text-tertiary"
+                  >
+                    {{ post.createTime }}
+                  </time>
+                </div>
+                <h2
+                  class="text-xl font-bold mb-3 hover:text-primary transition-colors line-clamp-2"
+                >
+                  <a
+                    :href="post.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {{ post.title }}
+                  </a>
+                </h2>
+                <p
+                  class="text-secondary line-clamp-3 mb-4 text-sm leading-relaxed"
+                  v-html="post.summary"
+                ></p>
+              </div>
+              <div class="px-6 py-4 bg-secondary border-t border-light">
+                <a
+                  :href="post.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center text-primary hover:text-primary-dark transition-colors group"
+                >
+                  阅读全文
+                  <svg
+                    class="w-4 h-4 ml-1 transform transition-transform group-hover:translate-x-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
+                </a>
+              </div>
+            </article>
+          </PageTransition>
         </div>
 
-        <!-- 提交按钮 -->
-        <div class="flex justify-center pt-2 md:pt-4">
+        <!-- 分页控件优化 -->
+        <div
+          v-if="totalPages > 1"
+          class="flex justify-center items-center space-x-3 mt-12"
+        >
           <button
-            type="submit"
-            class="w-full md:w-auto inline-flex items-center justify-center px-6 py-2.5 md:px-8 md:py-3 text-sm md:text-base font-medium rounded-lg md:rounded-full text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-sm"
-            :disabled="isSubmitting"
+            @click="prevPage"
+            :disabled="currentPage === 1"
+            class="px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:border-primary hover:text-primary transition-all focus:outline-none focus:ring-2 focus:ring-primary/50"
           >
-            <span v-if="isSubmitting" class="flex items-center">
+            <span class="flex items-center">
               <svg
-                class="animate-spin -ml-1 mr-2 h-5 w-5"
+                class="w-4 h-4 mr-1"
                 fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
                 <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
-              正在发送...
+              上一页
             </span>
-            <span v-else class="flex items-center">
-              发送消息
+          </button>
+          <div class="flex space-x-2">
+            <button
+              v-for="page in pageNumbers"
+              :key="page"
+              @click="changePage(page)"
+              :class="[
+                'w-10 h-10 rounded-lg flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-primary/50',
+                currentPage === page
+                  ? 'bg-primary text-white'
+                  : 'border-2 border-gray-300 dark:border-gray-600 hover:border-primary hover:text-primary',
+              ]"
+            >
+              {{ page }}
+            </button>
+          </div>
+          <button
+            @click="nextPage"
+            :disabled="currentPage === totalPages"
+            class="px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:border-primary hover:text-primary transition-all focus:outline-none focus:ring-2 focus:ring-primary/50"
+          >
+            <span class="flex items-center">
+              下一页
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 ml-2"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+                class="w-4 h-4 ml-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
                 <path
-                  d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
                 />
               </svg>
             </span>
           </button>
         </div>
+      </div>
 
-        <!-- 提交状态提示 -->
-        <transition
-          enter-active-class="transition duration-300 ease-out"
-          enter-from-class="transform -translate-y-2 opacity-0"
-          enter-to-class="transform translate-y-0 opacity-100"
-          leave-active-class="transition duration-200 ease-in"
-          leave-from-class="transform translate-y-0 opacity-100"
-          leave-to-class="transform -translate-y-2 opacity-0"
+      <!-- 空状态 -->
+      <div
+        v-if="!loading && !error && posts.length === 0"
+        class="text-center py-20"
+      >
+        <svg
+          class="w-20 h-20 mx-auto text-gray-400 mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <div
-            v-if="submitStatus"
-            class="text-center py-2 md:py-3 px-4 md:px-6 rounded-lg mt-4 md:mt-6 text-sm md:text-base"
-            :class="{
-              'bg-green-50 text-green-800 dark:bg-green-900/50 dark:text-green-100':
-                submitStatus === 'success',
-              'bg-red-50 text-red-800 dark:bg-red-900/50 dark:text-red-100':
-                submitStatus === 'error',
-            }"
-          >
-            <div
-              class="flex items-center justify-center"
-              v-if="submitStatus === 'success'"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2 text-green-500"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              <span>消息已发送，感谢您的反馈！我们将尽快与您联系。</span>
-            </div>
-            <div class="flex items-center justify-center" v-else>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2 text-red-500"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              <span>发送失败，请稍后重试。</span>
-            </div>
-          </div>
-        </transition>
-      </form>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
+        </svg>
+        <p class="text-gray-500 dark:text-gray-400 text-lg">暂无博客文章</p>
+      </div>
     </div>
   </div>
+
+  <!-- 留言弹窗 -->
+  <transition
+    enter-active-class="duration-200 ease-out"
+    enter-from-class="opacity-0 scale-95"
+    enter-to-class="opacity-100 scale-100"
+  >
+    <div
+      v-if="showLeaveMessage"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      @click.self="showLeaveMessage = false"
+    >
+      <div
+        class="w-full max-w-lg bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 space-y-4"
+      >
+        <h3 class="text-xl font-bold text-center">发表留言</h3>
+
+        <textarea
+          v-model="messageText"
+          rows="4"
+          placeholder="说点什么..."
+          class="w-full border px-3 py-2 rounded-lg resize-none focus:ring-2 focus:ring-blue-500"
+        ></textarea>
+
+        <div class="flex justify-end space-x-3">
+          <button
+            @click="showLeaveMessage = false"
+            class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+          >
+            取消
+          </button>
+          <button
+            @click="submitLeaveMessage"
+            :disabled="!messageText.trim()"
+            class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-400"
+          >
+            发表
+          </button>
+        </div>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <style scoped>

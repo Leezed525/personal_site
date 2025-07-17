@@ -1,4 +1,4 @@
-package com.ruoyi.lee.domain;
+package com.ruoyi.lee.domain.DTO;
 
 import lombok.Data;
 

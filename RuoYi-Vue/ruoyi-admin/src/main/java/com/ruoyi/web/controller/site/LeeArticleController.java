@@ -75,7 +75,7 @@ public class LeeArticleController extends BaseController {
     @Log(title = "站点博客列" , businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody LeeArticle leeArticle) {
-        return toAjax(leeArticleService.saveOrUpdate(leeArticle.setStatus(LeeArticleStatusEnums.HIDE)));
+        return toAjax(leeArticleService.saveOrUpdate(leeArticle.setStatus(LeeArticleStatusEnums.HIDE.getStatus())));
     }
 
     /**
@@ -105,7 +105,7 @@ public class LeeArticleController extends BaseController {
     @Log(title = "站点博客列" , businessType = BusinessType.PUBLISH)
     @PutMapping("/publish")
     public AjaxResult publish(@RequestBody LeeArticle leeArticle) {
-        leeArticle.setStatus(LeeArticleStatusEnums.PUBLISHED);
+        leeArticle.setStatus(LeeArticleStatusEnums.PUBLISHED.getStatus());
         return toAjax(leeArticleService.saveOrUpdate(leeArticle));
     }
 
@@ -116,7 +116,7 @@ public class LeeArticleController extends BaseController {
     @Log(title = "站点博客列" , businessType = BusinessType.HIDE)
     @PutMapping("/hide")
     public AjaxResult hide(@RequestBody LeeArticle leeArticle) {
-        leeArticle.setStatus(LeeArticleStatusEnums.HIDE);
+        leeArticle.setStatus(LeeArticleStatusEnums.HIDE.getStatus());
         return toAjax(leeArticleService.saveOrUpdate(leeArticle));
     }
 }

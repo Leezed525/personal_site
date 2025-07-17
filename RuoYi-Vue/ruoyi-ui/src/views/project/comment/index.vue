@@ -9,21 +9,27 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="回复时间" prop="replyTime">
-        <el-date-picker clearable
-          v-model="queryParams.replyTime"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择回复时间">
-        </el-date-picker>
-      </el-form-item>
       <el-form-item label="是否根留言" prop="root">
-        <el-input
+        <el-select
           v-model="queryParams.root"
-          placeholder="请输入是否根留言"
+          placeholder="请选择博客分类"
           clearable
-          @keyup.enter.native="handleQuery"
-        />
+          @change="handleQuery"
+        >
+          <el-option
+            v-for="item in is_root_selections"
+            :key="item.id"
+            :label="item.label"
+            :value="item.value"
+          />
+
+          <!--        <el-input-->
+          <!--          v-model="queryParams.root"-->
+          <!--          placeholder="请输入是否根留言"-->
+          <!--          clearable-->
+          <!--          @keyup.enter.native="handleQuery"-->
+          <!--        />-->
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -40,7 +46,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['project:comment:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -51,7 +58,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['project:comment:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -62,7 +70,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['project:comment:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -72,25 +81,20 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['project:comment:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="commentList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
-      <el-table-column label="上级留言" align="center" prop="preId" />
-      <el-table-column label="留言内容" align="center" prop="content" />
-      <el-table-column label="状态" align="center" prop="status" />
-      <el-table-column label="回复内容" align="center" prop="reply" />
-      <el-table-column label="回复时间" align="center" prop="replyTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.replyTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="是否根留言" align="center" prop="root" />
-      <el-table-column label="备注" align="center" prop="remark" />
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="主键" align="center" prop="id"/>
+      <el-table-column label="上级留言" align="center" prop="preId"/>
+      <el-table-column label="留言内容" align="center" prop="content"/>
+      <el-table-column label="状态" align="center" prop="status"/>
+      <el-table-column label="是否根留言" align="center" prop="root"/>
+      <el-table-column label="备注" align="center" prop="remark"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -99,18 +103,20 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['project:comment:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['project:comment:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -123,27 +129,27 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="上级留言" prop="preId">
-          <el-input v-model="form.preId" placeholder="请输入上级留言" />
+          <el-input v-model="form.preId" placeholder="请输入上级留言"/>
         </el-form-item>
         <el-form-item label="留言内容">
           <editor v-model="form.content" :min-height="192"/>
         </el-form-item>
         <el-form-item label="回复内容" prop="reply">
-          <el-input v-model="form.reply" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.reply" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="回复时间" prop="replyTime">
           <el-date-picker clearable
-            v-model="form.replyTime"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择回复时间">
+                          v-model="form.replyTime"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="请选择回复时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="是否根留言" prop="root">
-          <el-input v-model="form.root" placeholder="请输入是否根留言" />
+          <el-input v-model="form.root" placeholder="请输入是否根留言"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -155,7 +161,7 @@
 </template>
 
 <script>
-import { listComment, getComment, delComment, addComment, updateComment } from "@/api/project/comment"
+import {listComment, getComment, delComment, addComment, updateComment} from "@/api/project/comment"
 
 export default {
   name: "Comment",
@@ -195,21 +201,33 @@ export default {
       // 表单校验
       rules: {
         content: [
-          { required: true, message: "留言内容不能为空", trigger: "blur" }
+          {required: true, message: "留言内容不能为空", trigger: "blur"}
         ],
         status: [
-          { required: true, message: "状态不能为空", trigger: "change" }
+          {required: true, message: "状态不能为空", trigger: "change"}
         ],
         root: [
-          { required: true, message: "是否根留言不能为空", trigger: "blur" }
+          {required: true, message: "是否根留言不能为空", trigger: "blur"}
         ],
         createBy: [
-          { required: true, message: "创建人不能为空", trigger: "blur" }
+          {required: true, message: "创建人不能为空", trigger: "blur"}
         ],
         createTime: [
-          { required: true, message: "创建时间不能为空", trigger: "blur" }
+          {required: true, message: "创建时间不能为空", trigger: "blur"}
         ],
-      }
+      },
+      is_root_selections: [
+        {
+          id: 1,
+          label: "是",
+          value: "1",
+        },
+        {
+          id: 2,
+          label: "否",
+          value: "0",
+        }
+      ]
     }
   },
   created() {
@@ -261,7 +279,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -303,12 +321,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除留言板编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除留言板编号为"' + ids + '"的数据项？').then(function () {
         return delComment(ids)
       }).then(() => {
         this.getList()
         this.$modal.msgSuccess("删除成功")
-      }).catch(() => {})
+      }).catch(() => {
+      })
     },
     /** 导出按钮操作 */
     handleExport() {
