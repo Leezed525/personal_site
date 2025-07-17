@@ -6,6 +6,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.user.CaptchaException;
 import com.ruoyi.common.exception.user.CaptchaExpireException;
+import com.ruoyi.common.exception.user.EmailCodeException;
 import com.ruoyi.common.utils.EmailUtils;
 import com.ruoyi.common.utils.MessageUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -70,6 +71,19 @@ public class EmailService {
         return AjaxResult.success();
     }
 
+    public void validEmailCode(String email, String emailCode) {
+        //校验验证码
+        String emailKey = CacheConstants.EMAIL_CODE_KEY + email;
+        String code = redisCache.getCacheObject(emailKey);
+        if (code == null) {
+            throw new EmailCodeException();
+        }
+        redisCache.deleteObject(emailKey);
+        if (!emailCode.equalsIgnoreCase(code)) {
+            throw new EmailCodeException();
+        }
+    }
+
 
     private String getEmailCodeTitle() {
         return "Lee小站验证码";
@@ -127,7 +141,7 @@ public class EmailService {
             return 20L + expire;//额外增加一点冗余时间
         } else {
             //设置key
-            redisCache.setCacheObject(emailKey, "1" , EMAIL_CODE_INTERVAL, TimeUnit.SECONDS);
+            redisCache.setCacheObject(emailKey, "1", EMAIL_CODE_INTERVAL, TimeUnit.SECONDS);
         }
         return 0;
     }
