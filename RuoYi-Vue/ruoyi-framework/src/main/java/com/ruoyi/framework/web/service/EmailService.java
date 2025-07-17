@@ -75,6 +75,7 @@ public class EmailService {
         //校验验证码
         String emailKey = CacheConstants.EMAIL_CODE_KEY + email;
         String code = redisCache.getCacheObject(emailKey);
+        System.out.println(emailKey+ code);
         if (code == null) {
             throw new EmailCodeException();
         }

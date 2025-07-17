@@ -43,7 +43,7 @@ public class UserController extends BaseController {
         // 校验邮箱验证码
         emailService.validEmailCode(registerUserDTO.getEmail(), registerUserDTO.getEmailCode());
         SysUser user = new SysUser();
-        user.setUserName(registerUserDTO.getUserName());
+        user.setUserName(registerUserDTO.getUsername());
         user.setNickName(registerUserDTO.getNickname());
         user.setEmail(registerUserDTO.getEmail());
         user.setPassword(registerUserDTO.getPassword());

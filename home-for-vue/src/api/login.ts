@@ -30,7 +30,7 @@ export const getEmailCode = (imgCode: string, uuid: string, email: string) => {
   return axios.post<any>("/front/email/code", data);
 };
 
-export const register = () => {
-
+export const register = (data: any) => {
+  return axios.post<any>("/front/user/register", data);
 }
 

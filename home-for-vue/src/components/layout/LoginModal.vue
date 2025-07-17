@@ -2,7 +2,7 @@
 import {ref, onMounted, computed, watch, nextTick} from 'vue';
 import {getCaptcha} from "../../api/captcha";
 import {LoginReqBody} from "../../types/login";
-import {login, getEmailCode} from "../../api/login";
+import {login, getEmailCode, register} from "../../api/login";
 import {useAuthStore} from "../../store/auth";
 import {ElMessage} from "element-plus";
 
@@ -35,11 +35,11 @@ const activeForm = computed(() => (type.value === 'login' ? loginForm : register
 // 获取图形验证码
 const captchaUrl = ref('/api/captcha.ts?' + Date.now());
 
-interface Captcha {
-  image: string;   // base64 或 url
-  id: string;
-  expiredAt: number;
-}
+// interface Captcha {
+//   image: string;   // base64 或 url
+//   id: string;
+//   expiredAt: number;
+// }
 
 
 const fetchCaptcha = async () => {
@@ -52,7 +52,7 @@ const fetchCaptcha = async () => {
   }
 };
 const uuid = ref<string | null>();
-const captcha = ref<Captcha | null>(null);
+const captcha = ref<string | null>(null);
 const refreshCaptcha = () => fetchCaptcha();
 
 /* 切 tab 时刷新验证码 */
@@ -86,18 +86,18 @@ const emailCoolDown = ref(0)
 const sendEmailCode = async () => {
   if (!canSendEmailCode.value) return
 
-  const email = registerForm.value.email;
-
   getEmailCode(activeForm.value.captchaCode, uuid.value, registerForm.value.email)
     .then((res) => {
-      console.log(res);
+      // console.log(res);
       if (res.code === 200) {
-        ElMessage.success('验证码已发送，请查收邮箱');
-        //默认冷却60秒
-        emailCoolDown.value = 60;
+
         if (res.lastTime) {
           emailCoolDown.value = res.lastTime;  // 如果接口返回了冷却时间，使用它
           ElMessage.warning("请稍后再请求");
+        }else{
+          //默认冷却60秒
+          emailCoolDown.value = 60;
+          ElMessage.success('验证码已发送，请查收邮箱');
         }
         const timer = setInterval(() => {
           emailCoolDown.value--
@@ -109,52 +109,7 @@ const sendEmailCode = async () => {
       console.log(e);
       refreshCaptcha()          // ✅ 图形验证码错误时刷新
     });
-
-
-  // try {
-  //   ElMessage.success('验证码已发送，请查收邮箱')
-  //
-  //   // 冷却 60 秒
-  //   emailCoolDown.value = 60
-  //   const timer = setInterval(() => {
-  //     emailCoolDown.value--
-  //     if (emailCoolDown.value <= 0) clearInterval(timer)
-  //   }, 1000)
-  // } catch (e: any) {
-  //   ElMessage.error(e?.response?.data?.msg || '发送失败')
-  //   refreshCaptcha()          // ✅ 图形验证码错误时刷新
-  // }
 };
-
-
-/* 注册提交 */
-const handleRegister = async () => {
-  loading.value = true
-  try {
-    await fetch('/api/register', {               // ✅ 替换成你的 request.post(...)
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        username: registerForm.value.username,
-        password: registerForm.value.password,
-        nickname: registerForm.value.nickname,
-        email: registerForm.value.email,
-        emailCode: registerForm.value.emailCode,
-        captcha: registerForm.value.captchaCode,
-        uuid: uuid.value
-      })
-    })
-    ElMessage.success('注册成功！')
-    // 注册完成自动切到登录页
-    type.value = 'login'
-    refreshCaptcha()
-    closeLoading()
-  } catch (e: any) {
-    ElMessage.error(e?.response?.data?.msg || '注册失败')
-    refreshCaptcha()
-    closeLoading()
-  }
-}
 
 
 /* ---------------- 提交 ---------------- */
@@ -167,7 +122,7 @@ const closeLoading = () => {
   }, 600);
 }
 
-const submit = () => {
+const handleSubmit = () => {
   loading.value = true;
   if (type.value === "login") {
     const {username, password, captchaCode} = activeForm.value;
@@ -177,10 +132,35 @@ const submit = () => {
       closeLoading();
     }).catch(() => closeLoading());
   } else {
-
+    handleRegister();
   }
-
 };
+
+/* 注册提交 */
+const handleRegister = async () => {
+  const reqData = {
+    username: activeForm.value.username,
+    password: activeForm.value.password,
+    nickname: registerForm.value.nickname,
+    email: registerForm.value.email,
+    emailCode: registerForm.value.emailCode,
+  };
+  register(reqData).then(res => {
+    console.log("注册成功")
+    console.log(res);
+    if (res.code === 200) {
+      ElMessage.success('注册成功！');
+      closeLoading()
+    } else {
+      ElMessage.error(e?.response?.data?.msg || '注册失败')
+    }
+  }).catch(e => {
+    console.log("注册失败");
+    loading.value = false;
+    console.log(e);
+  });
+
+}
 
 onMounted(fetchCaptcha);
 
