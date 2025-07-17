@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.lee.mapper.LeeCommentMapper">
+    
+    <resultMap type="LeeComment" id="LeeCommentResult">
+        <result property="id"    column="id"    />
+        <result property="preId"    column="pre_id"    />
+        <result property="content"    column="content"    />
+        <result property="status"    column="status"    />
+        <result property="reply"    column="reply"    />
+        <result property="replyTime"    column="reply_time"    />
+        <result property="root"    column="root"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectLeeCommentVo">
+        select id, pre_id, content, status, reply, reply_time, root, create_by, create_time, update_by, update_time, remark from lee_comment
+    </sql>
+
+    <select id="selectLeeCommentList" parameterType="LeeComment" resultMap="LeeCommentResult">
+        <include refid="selectLeeCommentVo"/>
+        <where>  
+            <if test="preId != null "> and pre_id = #{preId}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="reply != null  and reply != ''"> and reply = #{reply}</if>
+            <if test="replyTime != null "> and reply_time = #{replyTime}</if>
+            <if test="root != null  and root != ''"> and root = #{root}</if>
+        </where>
+    </select>
+    
+    <select id="selectLeeCommentById" parameterType="Long" resultMap="LeeCommentResult">
+        <include refid="selectLeeCommentVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertLeeComment" parameterType="LeeComment" useGeneratedKeys="true" keyProperty="id">
+        insert into lee_comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="preId != null">pre_id,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="status != null">status,</if>
+            <if test="reply != null">reply,</if>
+            <if test="replyTime != null">reply_time,</if>
+            <if test="root != null and root != ''">root,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="preId != null">#{preId},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="status != null">#{status},</if>
+            <if test="reply != null">#{reply},</if>
+            <if test="replyTime != null">#{replyTime},</if>
+            <if test="root != null and root != ''">#{root},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLeeComment" parameterType="LeeComment">
+        update lee_comment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="preId != null">pre_id = #{preId},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="reply != null">reply = #{reply},</if>
+            <if test="replyTime != null">reply_time = #{replyTime},</if>
+            <if test="root != null and root != ''">root = #{root},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLeeCommentById" parameterType="Long">
+        delete from lee_comment where id = #{id}
+    </delete>
+
+    <delete id="deleteLeeCommentByIds" parameterType="String">
+        delete from lee_comment where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
