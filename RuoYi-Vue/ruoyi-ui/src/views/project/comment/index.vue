@@ -384,18 +384,20 @@ export default {
       if (status === 1) {
         auditCommentSuccess(data).then(() => {
           this.$modal.msgSuccess('审核通过');
+          this.getList();
         }).catch(() => {
         });
       }else{
         auditCommentFail(data).then(() => {
           this.$modal.msgSuccess('审核不通过');
+          this.getList();
         }).catch(() => {
         });
       }
       // 1. 关闭弹窗 2. 刷新列表
       this.viewOpen = false;
       this.auditLoading = false;
-      this.getList();
+
     },
 
     /** 导出按钮操作 */

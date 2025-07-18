@@ -34,6 +34,13 @@ public class CommentController extends BaseController {
         return getDataTable(list);
     }
 
+
+    @GetMapping("/listChildComment")
+    public AjaxResult listChildComment(LeeComment leeComment) {
+        List<LeeComment> list = commentService.listChildComment(leeComment);
+        return AjaxResult.success(list);
+    }
+
     /**
      * 新增留言板
      */
@@ -42,9 +49,9 @@ public class CommentController extends BaseController {
     public AjaxResult add(@Validated @RequestBody LeeComment leeComment) {
         // 设置状态为审核中
         leeComment.setStatus(LeeCommentStatusEnums.IN_REVIEW.getStatus()); // 假设1表示审核中状态
-        if (leeComment.getRoot() == null) {
+        if (leeComment.getPreId() == null) {
             leeComment.setRoot(LeeArticleRootEnum.ROOT.getRoot()); // 设置根留言
-        }else{
+        } else {
             leeComment.setRoot(LeeArticleRootEnum.NOT_ROOT.getRoot()); // 设置非根留言
         }
         return toAjax(commentService.saveOrUpdate(leeComment));

@@ -4,10 +4,9 @@ import emailjs from "@emailjs/browser";
 import {emailConfig} from "@/config/email";
 import {fetchBlogPosts} from "@/utils/rss";
 import PageTransition from "@/components/PageTransition.vue";
-import {listArticle} from "@/api/blog/article";
 import {ArticleQueryData, ArticleResData} from "@/types/article";
 import {ElMessage} from "element-plus";
-import {addComment} from "@/api/contact/comment";
+import {addComment, listComment, listChildComment} from "@/api/contact/comment";
 
 
 import {useAuthStore} from '@/store/auth'
@@ -19,6 +18,14 @@ const messageText = ref('')           //  留言内容
 
 const loading = ref(true);
 const error = ref<string | null>(null);
+
+/* 新增：弹窗控制 */
+const replyModal = ref<{
+  open: boolean;
+}>({open: false});
+
+/* 新增：回复输入框 */
+const replyText = ref('');
 
 let posts: ArticleResData[] = [];
 let queryData: ArticleQueryData = {
@@ -43,19 +50,18 @@ interface FormData {
   message: string;
 }
 
-const formData = ref<FormData>({
-  name: "",
-  email: "",
-  subject: "",
-  message: "",
-});
+/* 新增：当前留言详情 + 子回复 */
+const currentDetail = ref<{
+  id: string | number;
+  createBy: string;
+  createTime: string;
+  content: string;
+  replies: ArticleResData[];
+} | null>(null)
 
-const isSubmitting = ref(false);
-const submitStatus = ref<"success" | "error" | null>(null);
+/* 新增：弹窗 loading */
+const replyDetailLoading = ref(false)
 
-const validateEmail = (email: string) => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-};
 
 const handleLeaveMessage = () => {
   if (!auth.isLoggedIn) {
@@ -78,20 +84,63 @@ const submitLeaveMessage = async () => {
   }
 
   addComment(data).then(() => {
-    ElMessage.success('留言发表成功')
+    ElMessage.success('留言发表成功(审核通过后展示)')
     showLeaveMessage.value = false
   }).catch((e: any) => {
     ElMessage.error(e?.response?.data?.msg || '发表失败')
   })
+};
 
 
-  // try {
-  //   await request.post('/api/message', {content: messageText.value})
-  //   ElMessage.success('留言发表成功')
-  //   showLeaveMessage.value = false
-  // } catch (e: any) {
-  //   ElMessage.error(e?.response?.data?.msg || '发表失败')
-  // }
+// ✅ 替换原来的 openReplyModal
+const openReplyModal = async (post: ArticleResData) => {
+  replyDetailLoading.value = true
+  replyModal.value = {open: true, comment: null} // 先显示空壳
+
+  try {
+    // 1. 拉子回复
+    const repliesRes = await listChildComment(post);
+
+    // 2. 拼成完整数据
+    currentDetail.value = {
+      ...post,
+      replies: repliesRes.data
+    }
+  } catch (e) {
+    ElMessage.error('加载留言详情失败')
+  } finally {
+    replyDetailLoading.value = false
+  }
+}
+
+const closeReplyModal = () => {
+  replyModal.value.open = false
+  currentDetail.value = null
+}
+
+const submitReply = async (preid) => {
+  if (!replyText.value.trim()) return;
+  console.log(preid);
+  console.log(replyText.value);
+  const data = {
+    preId: preid,
+    content: replyText.value,
+    authorId: auth.user.id, // 使用当前登录用户的 ID
+  }
+
+  addComment(data).then(() => {
+    ElMessage.success('留言发表成功(审核通过后展示)')
+    replyText.value = '';
+  }).catch((e: any) => {
+    ElMessage.error(e?.response?.data?.msg || '发表失败')
+  })
+};
+
+/* 示例：刷新回复列表（按后端接口实现） */
+const refreshReplies = async () => {
+  /* 如后端支持 /api/comment/{id}/replies */
+  // const { data } = await getReplies(replyModal.value.comment!.id);
+  // replyModal.value.comment.replies = data;
 };
 
 // 获取博客文章
@@ -99,7 +148,7 @@ async function getList() {
   try {
     loading.value = true;
     queryData.pageNum = currentPage.value;
-    const data: any = await listArticle(queryData);
+    const data: any = await listComment(queryData);
     //获取总页数
     totalArticles = data.total;
     totalPages = Math.ceil(data.total / postsPerPage);
@@ -176,65 +225,36 @@ onMounted(async () => {
         </button>
       </div>
 
-      <!-- 博客列表 -->
+      <!-- 留言列表 -->
       <div v-else>
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <PageTransition
             v-for="post in posts"
-            :key="post.link"
+            :key="post.id"
             name="fade"
             class="h-full"
           >
             <article
-              class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden"
-            >
-              <div class="p-6 flex-1">
-                <div class="flex items-center mb-4 space-x-2">
-                  <time
-                    :datetime="post.createTime"
-                    class="text-sm text-tertiary"
-                  >
-                    {{ post.createTime }}
-                  </time>
-                </div>
-                <h2
-                  class="text-xl font-bold mb-3 hover:text-primary transition-colors line-clamp-2"
-                >
-                  <a
-                    :href="post.url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {{ post.title }}
-                  </a>
-                </h2>
-                <p
-                  class="text-secondary line-clamp-3 mb-4 text-sm leading-relaxed"
-                  v-html="post.summary"
-                ></p>
+              class="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl  transition-all duration-300 flex flex-col overflow-hidden">
+              <!-- 顶部信息 -->
+              <div class="p-5">
+                <time :datetime="post.createTime" class="text-xs text-gray-400 dark:text-gray-500">
+                  {{ post.createTime }}
+                </time>
+
+                <h3 class="mt-2 text-lg font-semibold text-gray-900 dark:text-white  line-clamp-2">
+                  {{ post.createBy }}
+                </h3>
+
+                <p class="mt-2 text-sm text-gray-600 dark:text-gray-300 leading-relaxed" v-html="post.content"></p>
               </div>
-              <div class="px-6 py-4 bg-secondary border-t border-light">
-                <a
-                  :href="post.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center text-primary hover:text-primary-dark transition-colors group"
-                >
-                  阅读全文
-                  <svg
-                    class="w-4 h-4 ml-1 transform transition-transform group-hover:translate-x-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M13 7l5 5m0 0l-5 5m5-5H6"
-                    />
-                  </svg>
-                </a>
+
+              <!-- 底部按钮区 -->
+              <div class="mt-auto px-5 py-3 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-end">
+                <button @click="openReplyModal(post)"
+                        class="text-xs font-medium px-3 py-1.5 rounded-full  text-white bg-blue-500  hover:bg-blue-600 transition-all duration-200 hover:scale-105">
+                  查看/回复
+                </button>
               </div>
             </article>
           </PageTransition>
@@ -368,6 +388,95 @@ onMounted(async () => {
             发表
           </button>
         </div>
+      </div>
+    </div>
+  </transition>
+
+  <!-- 回复弹窗 -->
+  <transition
+    enter-active-class="duration-200 ease-out"
+    enter-from-class="opacity-0 scale-95"
+    enter-to-class="opacity-100 scale-100"
+  >
+    <div
+      v-if="replyModal.open"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      @click.self="closeReplyModal"
+    >
+      <div
+        class="w-full max-w-2xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 space-y-4 overflow-y-auto"
+      >
+        <h3 class="text-xl font-bold">留言详情</h3>
+
+        <!-- ✅ 骨架屏 -->
+        <div v-if="replyDetailLoading" class="flex justify-center py-10">
+          <div class="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent"></div>
+        </div>
+
+        <!-- ✅ 详情渲染 -->
+        <template v-if="!replyDetailLoading && currentDetail">
+          <!-- 原留言 -->
+          <div class="border-b pb-4">
+            <p class="text-sm text-tertiary">{{ currentDetail.createTime }}</p>
+            <p class="text-lg font-semibold mt-1">{{ currentDetail.createBy }}</p>
+            <p class="mt-2" v-html="currentDetail.content"></p>
+          </div>
+
+          <!-- 回复列表 -->
+          <div>
+            <h4 class="font-semibold mb-2">回复</h4>
+            <!-- 有回复 -->
+            <div v-if="currentDetail?.replies?.length">
+              <div
+                v-for="r in currentDetail.replies"
+                :key="r.id"
+                class="mb-2 border-l-2 pl-3"
+              >
+                <p class="text-sm text-tertiary">{{ r.createBy }} · {{ r.createTime }}</p>
+                <p>{{ r.content }}</p>
+              </div>
+            </div>
+            <!-- ✅ 暂无回复 -->
+            <p v-else class="text-sm text-gray-400 dark:text-gray-500">
+              暂无回复
+            </p>
+          </div>
+        </template>
+
+        <!-- 回复输入框区域 -->
+        <div>
+          <!-- 未登录：灰色占位提示 -->
+          <div v-if="!auth.isLoggedIn"
+               class="w-full border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-center py-4 text-sm text-gray-500 cursor-pointer"
+               @click="needLogin"
+          >
+            请先登录后再回复
+          </div>
+
+          <!-- 已登录：正常输入框 -->
+          <textarea v-else
+                    v-model="replyText" rows="3" placeholder="写一条回复..."
+                    class="w-full border px-3 py-2 rounded-lg resize-none focus:ring-2 focus:ring-blue-500"
+          ></textarea>
+        </div>
+
+        <!-- 回复按钮：未登录时隐藏 -->
+        <button
+          v-if="auth.isLoggedIn"
+          @click="submitReply(currentDetail.id)"
+          :disabled="!replyText.trim()"
+          class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-400"
+        >
+          回复
+        </button>
+
+        <!-- 关闭按钮 -->
+        <button
+          @click="closeReplyModal"
+          class="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+        >
+          &times;
+        </button>
       </div>
     </div>
   </transition>

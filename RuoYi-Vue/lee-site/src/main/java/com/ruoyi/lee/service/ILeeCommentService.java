@@ -21,4 +21,6 @@ public interface ILeeCommentService extends IService<LeeComment> {
     public List<LeeComment> selectLeeCommentList(LeeComment leeComment);
 
     List<LeeComment> selectFrontLeeCommentList(LeeComment leeComment);
+
+    List<LeeComment> listChildComment(LeeComment leeComment);
 }

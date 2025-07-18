@@ -5,6 +5,7 @@ import com.ruoyi.common.core.domain.LeeBaseEntity;
 import lombok.Data;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.annotation.Excel;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 
@@ -28,9 +29,12 @@ public class LeeComment extends LeeBaseEntity
     @Excel(name = "上级留言")
     private Long preId;
 
-    /** 留言内容 */
+    /**
+     * 留言内容
+     */
     @Excel(name = "留言内容")
     @NotNull(message = "留言内容不能为空")
+    @Length(min = 1, max = 2000, message = "留言内容长度必须在1到2000之间")
     private String content;
 
     /** 状态 */

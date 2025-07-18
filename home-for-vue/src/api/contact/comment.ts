@@ -6,7 +6,11 @@ export const addComment = (data: any) => {
 
 
 // 文章获取
-export const listArticle = (params: any) => {
-  return axios.get<any[]>('/front/article/list', params);
+export const listComment = (params: any) => {
+  return axios.get<any[]>('/front/comment/list', params);
+}
+
+export const listChildComment = (params: any) => {
+  return axios.get<any[]>('/front/comment/listChildComment', params);
 }
 

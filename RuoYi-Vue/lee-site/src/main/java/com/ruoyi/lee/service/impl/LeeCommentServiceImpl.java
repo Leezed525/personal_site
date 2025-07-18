@@ -49,4 +49,20 @@ public class LeeCommentServiceImpl extends ServiceImpl<LeeCommentMapper, LeeComm
 
     }
 
+    /**
+     * 查询子留言
+     *
+     * @param leeComment 父留言
+     * @return 子留言列表
+     */
+    @Override
+    public List<LeeComment> listChildComment(LeeComment leeComment) {
+        LambdaQueryWrapper<LeeComment> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(LeeComment::getPreId, leeComment.getId()); // 根据父留言ID查询子留言
+        queryWrapper.eq(LeeComment::getStatus, LeeCommentStatusEnums.PUBLISHED.getStatus()); // 只查询状态为审核通过的留言
+        queryWrapper.orderByDesc(LeeComment::getCreateTime); // 按创建时间降序排列
+        List<LeeComment> comments = baseMapper.selectList(queryWrapper);
+        return comments;
+    }
+
 }
