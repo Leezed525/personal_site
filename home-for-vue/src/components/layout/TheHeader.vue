@@ -87,7 +87,7 @@ const navItems = [
     ],
   },
   {name: "技能", path: "/skills"},
-  {name: "新博客", path: "/newblog"},
+  // {name: "新博客", path: "/newblog"},
   {name: "博客", path: "/blog"},
   {name: "联系", path: "/contact"},
 ];

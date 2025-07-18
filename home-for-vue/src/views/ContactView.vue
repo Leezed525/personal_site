@@ -348,138 +348,139 @@ onMounted(async () => {
         <p class="text-gray-500 dark:text-gray-400 text-lg">暂无博客文章</p>
       </div>
     </div>
+    <!-- 留言弹窗 -->
+    <transition
+      enter-active-class="duration-200 ease-out"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+    >
+      <div
+        v-if="showLeaveMessage"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+        @click.self="showLeaveMessage = false"
+      >
+        <div
+          class="w-full max-w-lg bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 space-y-4"
+        >
+          <h3 class="text-xl font-bold text-center">发表留言</h3>
+
+          <textarea
+            v-model="messageText"
+            rows="4"
+            placeholder="说点什么..."
+            class="w-full border px-3 py-2 rounded-lg resize-none focus:ring-2 focus:ring-blue-500"
+          ></textarea>
+
+          <div class="flex justify-end space-x-3">
+            <button
+              @click="showLeaveMessage = false"
+              class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+            >
+              取消
+            </button>
+            <button
+              @click="submitLeaveMessage"
+              :disabled="!messageText.trim()"
+              class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-400"
+            >
+              发表
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- 回复弹窗 -->
+    <transition
+      enter-active-class="duration-200 ease-out"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+    >
+      <div
+        v-if="replyModal.open"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+        @click.self="closeReplyModal"
+      >
+        <div
+          class="w-full max-w-2xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 space-y-4 overflow-y-auto"
+        >
+          <h3 class="text-xl font-bold">留言详情</h3>
+
+          <!-- ✅ 骨架屏 -->
+          <div v-if="replyDetailLoading" class="flex justify-center py-10">
+            <div class="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent"></div>
+          </div>
+
+          <!-- ✅ 详情渲染 -->
+          <template v-if="!replyDetailLoading && currentDetail">
+            <!-- 原留言 -->
+            <div class="border-b pb-4">
+              <p class="text-sm text-tertiary">{{ currentDetail.createTime }}</p>
+              <p class="text-lg font-semibold mt-1">{{ currentDetail.createBy }}</p>
+              <p class="mt-2" v-html="currentDetail.content"></p>
+            </div>
+
+            <!-- 回复列表 -->
+            <div>
+              <h4 class="font-semibold mb-2">回复</h4>
+              <!-- 有回复 -->
+              <div v-if="currentDetail?.replies?.length">
+                <div
+                  v-for="r in currentDetail.replies"
+                  :key="r.id"
+                  class="mb-2 border-l-2 pl-3"
+                >
+                  <p class="text-sm text-tertiary">{{ r.createBy }} · {{ r.createTime }}</p>
+                  <p>{{ r.content }}</p>
+                </div>
+              </div>
+              <!-- ✅ 暂无回复 -->
+              <p v-else class="text-sm text-gray-400 dark:text-gray-500">
+                暂无回复
+              </p>
+            </div>
+          </template>
+
+          <!-- 回复输入框区域 -->
+          <div>
+            <!-- 未登录：灰色占位提示 -->
+            <div v-if="!auth.isLoggedIn"
+                 class="w-full border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-center py-4 text-sm text-gray-500 cursor-pointer"
+                 @click="needLogin"
+            >
+              请先登录后再回复
+            </div>
+
+            <!-- 已登录：正常输入框 -->
+            <textarea v-else
+                      v-model="replyText" rows="3" placeholder="写一条回复..."
+                      class="w-full border px-3 py-2 rounded-lg resize-none focus:ring-2 focus:ring-blue-500"
+            ></textarea>
+          </div>
+
+          <!-- 回复按钮：未登录时隐藏 -->
+          <button
+            v-if="auth.isLoggedIn"
+            @click="submitReply(currentDetail.id)"
+            :disabled="!replyText.trim()"
+            class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-400"
+          >
+            回复
+          </button>
+
+          <!-- 关闭按钮 -->
+          <button
+            @click="closeReplyModal"
+            class="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+          >
+            &times;
+          </button>
+        </div>
+      </div>
+    </transition>
   </div>
 
-  <!-- 留言弹窗 -->
-  <transition
-    enter-active-class="duration-200 ease-out"
-    enter-from-class="opacity-0 scale-95"
-    enter-to-class="opacity-100 scale-100"
-  >
-    <div
-      v-if="showLeaveMessage"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-      @click.self="showLeaveMessage = false"
-    >
-      <div
-        class="w-full max-w-lg bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 space-y-4"
-      >
-        <h3 class="text-xl font-bold text-center">发表留言</h3>
 
-        <textarea
-          v-model="messageText"
-          rows="4"
-          placeholder="说点什么..."
-          class="w-full border px-3 py-2 rounded-lg resize-none focus:ring-2 focus:ring-blue-500"
-        ></textarea>
-
-        <div class="flex justify-end space-x-3">
-          <button
-            @click="showLeaveMessage = false"
-            class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
-          >
-            取消
-          </button>
-          <button
-            @click="submitLeaveMessage"
-            :disabled="!messageText.trim()"
-            class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-400"
-          >
-            发表
-          </button>
-        </div>
-      </div>
-    </div>
-  </transition>
-
-  <!-- 回复弹窗 -->
-  <transition
-    enter-active-class="duration-200 ease-out"
-    enter-from-class="opacity-0 scale-95"
-    enter-to-class="opacity-100 scale-100"
-  >
-    <div
-      v-if="replyModal.open"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-      @click.self="closeReplyModal"
-    >
-      <div
-        class="w-full max-w-2xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 space-y-4 overflow-y-auto"
-      >
-        <h3 class="text-xl font-bold">留言详情</h3>
-
-        <!-- ✅ 骨架屏 -->
-        <div v-if="replyDetailLoading" class="flex justify-center py-10">
-          <div class="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent"></div>
-        </div>
-
-        <!-- ✅ 详情渲染 -->
-        <template v-if="!replyDetailLoading && currentDetail">
-          <!-- 原留言 -->
-          <div class="border-b pb-4">
-            <p class="text-sm text-tertiary">{{ currentDetail.createTime }}</p>
-            <p class="text-lg font-semibold mt-1">{{ currentDetail.createBy }}</p>
-            <p class="mt-2" v-html="currentDetail.content"></p>
-          </div>
-
-          <!-- 回复列表 -->
-          <div>
-            <h4 class="font-semibold mb-2">回复</h4>
-            <!-- 有回复 -->
-            <div v-if="currentDetail?.replies?.length">
-              <div
-                v-for="r in currentDetail.replies"
-                :key="r.id"
-                class="mb-2 border-l-2 pl-3"
-              >
-                <p class="text-sm text-tertiary">{{ r.createBy }} · {{ r.createTime }}</p>
-                <p>{{ r.content }}</p>
-              </div>
-            </div>
-            <!-- ✅ 暂无回复 -->
-            <p v-else class="text-sm text-gray-400 dark:text-gray-500">
-              暂无回复
-            </p>
-          </div>
-        </template>
-
-        <!-- 回复输入框区域 -->
-        <div>
-          <!-- 未登录：灰色占位提示 -->
-          <div v-if="!auth.isLoggedIn"
-               class="w-full border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-center py-4 text-sm text-gray-500 cursor-pointer"
-               @click="needLogin"
-          >
-            请先登录后再回复
-          </div>
-
-          <!-- 已登录：正常输入框 -->
-          <textarea v-else
-                    v-model="replyText" rows="3" placeholder="写一条回复..."
-                    class="w-full border px-3 py-2 rounded-lg resize-none focus:ring-2 focus:ring-blue-500"
-          ></textarea>
-        </div>
-
-        <!-- 回复按钮：未登录时隐藏 -->
-        <button
-          v-if="auth.isLoggedIn"
-          @click="submitReply(currentDetail.id)"
-          :disabled="!replyText.trim()"
-          class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-400"
-        >
-          回复
-        </button>
-
-        <!-- 关闭按钮 -->
-        <button
-          @click="closeReplyModal"
-          class="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-        >
-          &times;
-        </button>
-      </div>
-    </div>
-  </transition>
 </template>
 
 <style scoped>

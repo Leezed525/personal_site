@@ -75,14 +75,14 @@ const routes: RouteRecordRaw[] = [
       title: "技术博客",
     },
   },
-  {
-    path: "/newblog",
-    name: "newblog",
-    component: () => import("@/views/NewBlogView.vue"),
-    meta: {
-      title: "新博客",
-    },
-  },
+  // {
+  //   path: "/newblog",
+  //   name: "newblog",
+  //   component: () => import("@/views/NewBlogView.vue"),
+  //   meta: {
+  //     title: "新博客",
+  //   },
+  // },
   {
     path: "/contact",
     name: "contact",
