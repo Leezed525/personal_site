@@ -210,7 +210,7 @@ import {
   updateArticle,
   publishArticle,
   hideArticle
-} from "@/api/project/article"
+} from "@/api/LeeSite/article"
 
 export default {
   name: "Article",

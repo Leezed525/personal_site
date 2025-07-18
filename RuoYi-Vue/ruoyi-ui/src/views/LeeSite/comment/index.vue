@@ -41,7 +41,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['project:comment:remove']"
+          v-hasPermi="['LeeSite:comment:remove']"
         >删除
         </el-button>
       </el-col>
@@ -52,7 +52,7 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['project:comment:export']"
+          v-hasPermi="['LeeSite:comment:export']"
         >导出
         </el-button>
       </el-col>
@@ -103,7 +103,7 @@
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['project:comment:remove']"
+            v-hasPermi="['LeeSite:comment:remove']"
           >删除
           </el-button>
         </template>
@@ -236,7 +236,7 @@ import {
   auditCommentSuccess,
   auditCommentFail,
   listChildComment
-} from "@/api/project/comment";
+} from "@/api/LeeSite/comment";
 
 export default {
   name: "Comment",
@@ -461,7 +461,7 @@ export default {
 
     /** 导出按钮操作 */
     handleExport() {
-      this.download('project/comment/export', {
+      this.download('LeeSite/comment/export', {
         ...this.queryParams
       }, `comment_${new Date().getTime()}.xlsx`)
     }

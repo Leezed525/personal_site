@@ -6,7 +6,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.lee.domain.LeeComment;
-import com.ruoyi.lee.enums.LeeArticleRootEnum;
+import com.ruoyi.lee.enums.LeeArticleRootEnums;
 import com.ruoyi.lee.enums.LeeCommentStatusEnums;
 import com.ruoyi.lee.service.ILeeCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +48,9 @@ public class CommentController extends BaseController {
         // 设置状态为审核中
         leeComment.setStatus(LeeCommentStatusEnums.IN_REVIEW.getStatus()); // 假设1表示审核中状态
         if (leeComment.getPreId() == null) {
-            leeComment.setRoot(LeeArticleRootEnum.ROOT.getRoot()); // 设置根留言
+            leeComment.setRoot(LeeArticleRootEnums.ROOT.getRoot()); // 设置根留言
         } else {
-            leeComment.setRoot(LeeArticleRootEnum.NOT_ROOT.getRoot()); // 设置非根留言
+            leeComment.setRoot(LeeArticleRootEnums.NOT_ROOT.getRoot()); // 设置非根留言
         }
         return toAjax(commentService.saveOrUpdate(leeComment));
     }

@@ -146,3 +146,20 @@ lettuce 连接池的 采用非阻塞式IO，在高并发的情况下表现良好
 完成后台的留言的删除，查看功能，操作更加人性化了一点
 后续可以完成审核的任务分配，审核成功的邮箱提醒等功能
 
+开始设计项目模块
+
+| 字段        | 类型         | 备注     | 可否为空 |
+| ----------- | ------------ | -------- | -------- |
+| id          | int          | 主键     | ❌        |
+| title       | varchar(255) | 项目名称 | ❌        |
+| description | varchar(500) | 项目描述 | ✅        |
+| status      | int          | 状态     | ❌        |
+| link        | varchar(500) | 项目链接 | ✅        |
+| image       | varchar(500) | 项目图片 | ✅        |
+| create_by   | varchar(64)  | 创建人   | ❌        |
+| create_time | datetime     | 创建时间 | ❌        |
+| update_by   | varchar(64)  | 更新人   | ✅        |
+| update_time | datetime     | 更新时间 | ✅        |
+| remark      | varchar(500) | 备注     | ✅        |
+
+
