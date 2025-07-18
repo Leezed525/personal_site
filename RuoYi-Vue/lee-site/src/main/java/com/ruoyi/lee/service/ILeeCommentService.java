@@ -22,5 +22,9 @@ public interface ILeeCommentService extends IService<LeeComment> {
 
     List<LeeComment> selectFrontLeeCommentList(LeeComment leeComment);
 
+    List<LeeComment> listFrontChildComment(LeeComment leeComment);
+
+    int removeCommentByIds(List<Long> list);
+
     List<LeeComment> listChildComment(LeeComment leeComment);
 }

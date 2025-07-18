@@ -26,14 +26,13 @@ import com.ruoyi.common.core.page.TableDataInfo;
 
 /**
  * 留言板Controller
- * 
+ *
  * @author ruoyi
  * @date 2025-07-17
  */
 @RestController
 @RequestMapping("/LeeSite/comment")
-public class LeeCommentController extends BaseController
-{
+public class LeeCommentController extends BaseController {
     @Autowired
     private ILeeCommentService leeCommentService;
 
@@ -42,11 +41,17 @@ public class LeeCommentController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('project:comment:list')")
     @GetMapping("/list")
-    public TableDataInfo list(LeeComment leeComment)
-    {
+    public TableDataInfo list(LeeComment leeComment) {
         startPage();
         List<LeeComment> list = leeCommentService.selectLeeCommentList(leeComment);
         return getDataTable(list);
+    }
+
+    @PreAuthorize("@ss.hasPermi('project:comment:list')")
+    @GetMapping("/listChildComment")
+    public AjaxResult listChildComment(LeeComment leeComment) {
+        List<LeeComment> list = leeCommentService.listChildComment(leeComment);
+        return AjaxResult.success(list);
     }
 
     /**
@@ -55,8 +60,7 @@ public class LeeCommentController extends BaseController
     @PreAuthorize("@ss.hasPermi('project:comment:export')")
     @Log(title = "留言板", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, LeeComment leeComment)
-    {
+    public void export(HttpServletResponse response, LeeComment leeComment) {
         List<LeeComment> list = leeCommentService.selectLeeCommentList(leeComment);
         ExcelUtil<LeeComment> util = new ExcelUtil<LeeComment>(LeeComment.class);
         util.exportExcel(response, list, "留言板数据");
@@ -67,8 +71,7 @@ public class LeeCommentController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('project:comment:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return success(leeCommentService.getById(id));
     }
 
@@ -78,8 +81,7 @@ public class LeeCommentController extends BaseController
     @PreAuthorize("@ss.hasPermi('project:comment:add')")
     @Log(title = "留言板", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody LeeComment leeComment)
-    {
+    public AjaxResult add(@RequestBody LeeComment leeComment) {
         return toAjax(leeCommentService.saveOrUpdate(leeComment));
     }
 
@@ -89,8 +91,7 @@ public class LeeCommentController extends BaseController
     @PreAuthorize("@ss.hasPermi('project:comment:edit')")
     @Log(title = "留言板", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody LeeComment leeComment)
-    {
+    public AjaxResult edit(@RequestBody LeeComment leeComment) {
         return toAjax(leeCommentService.saveOrUpdate(leeComment));
     }
 
@@ -102,6 +103,7 @@ public class LeeCommentController extends BaseController
         leeComment.setStatus(LeeCommentStatusEnums.PUBLISHED.getStatus());
         return toAjax(leeCommentService.updateById(leeComment));
     }
+
     @PreAuthorize("@ss.hasPermi('project:comment:edit')")
     @Log(title = "留言板", businessType = BusinessType.UPDATE)
     @PutMapping("/audit/fail")
@@ -116,9 +118,8 @@ public class LeeCommentController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('project:comment:remove')")
     @Log(title = "留言板", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        return toAjax(leeCommentService.removeByIds(Arrays.asList(ids)));
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
+        return toAjax(leeCommentService.removeCommentByIds(Arrays.asList(ids)));
     }
 }

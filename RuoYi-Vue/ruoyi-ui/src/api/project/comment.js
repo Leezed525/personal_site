@@ -9,6 +9,15 @@ export function listComment(query) {
   })
 }
 
+// 查询留言板列表
+export function listChildComment(query) {
+  return request({
+    url: '/LeeSite/comment/listChildComment',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询留言板详细
 export function getComment(id) {
   return request({

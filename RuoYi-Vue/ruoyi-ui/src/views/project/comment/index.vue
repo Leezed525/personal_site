@@ -1,14 +1,6 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="上级留言" prop="preId">
-        <el-input
-          v-model="queryParams.preId"
-          placeholder="请输入上级留言"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="是否根留言" prop="root">
         <el-select
           v-model="queryParams.root"
@@ -24,6 +16,16 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="博客状态" prop="root">
+        <el-select v-model="queryParams.status" placeholder="请选择博客状态" clearable @change="handleQuery">
+          <el-option
+            v-for="item in this.dict.type.site_comment_status"
+            :key="item.id"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -31,29 +33,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['project:comment:add']"
-        >新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['project:comment:edit']"
-        >修改
-        </el-button>
-      </el-col>
       <el-col :span="1.5">
         <el-button
           type="danger"
@@ -82,7 +61,6 @@
 
     <el-table v-loading="loading" :data="commentList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="上级留言" align="center" prop="preId"/>
       <el-table-column label="留言内容" align="center" prop="content"/>
       <el-table-column prop="status" label="状态" width="100">
         <template slot-scope="scope">
@@ -91,20 +69,34 @@
       </el-table-column>
       <el-table-column label="是否根留言" align="center" prop="root">
         <template slot-scope="scope">
-          {{ scope.row.root === '1' ? '是' : '否' }}
+          <el-tag
+            :type="scope.row.root === '1' ? 'success' : 'info'"
+            effect="dark"
+            size="small">
+            {{ scope.row.root === '1' ? '根留言' : '子留言' }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="留言人" align="center" prop="createBy"/>
       <el-table-column label="留言时间" align="center" prop="createTime"/>
-      <el-table-column label="备注" align="center" prop="remark"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <!-- 新增：根/子留言按钮 -->
+          <el-button
+            size="mini"
+            type="text"
+            :icon="scope.row.root === '1' ? 'el-icon-link' : 'el-icon-caret-top'"
+            @click="handleViewRootOrChildren(scope.row)"
+          >
+            {{ scope.row.root === '1' ? '查看子留言' : '查看根留言' }}
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-view"
             @click="handleView(scope.row)"
-          >查看
+          >
+            {{ scope.row.status === 0 ? '审核' : '查看' }}
           </el-button>
           <el-button
             size="mini"
@@ -181,6 +173,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button
+          v-if="viewForm.status===0"
           type="success"
           icon="el-icon-check"
           :loading="auditLoading"
@@ -188,6 +181,7 @@
         >审核通过
         </el-button>
         <el-button
+          v-if="viewForm.status===0"
           type="danger"
           icon="el-icon-close"
           :loading="auditLoading"
@@ -197,11 +191,52 @@
         <el-button @click="viewOpen=false">关 闭</el-button>
       </div>
     </el-dialog>
+
+    <!-- 根/子留言弹窗 -->
+    <el-dialog
+      :title="rootChildTitle"
+      :visible.sync="rootChildOpen"
+      width="700px"
+      append-to-body
+    >
+      <!-- 根留言：单条 -->
+      <div v-if="rootChildData.root === '1'">
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="编号">{{ rootChildData.id }}</el-descriptions-item>
+          <el-descriptions-item label="内容">
+            <div v-html="rootChildData.content" class="content-box"></div>
+          </el-descriptions-item>
+          <el-descriptions-item label="留言人">{{ rootChildData.createBy }}</el-descriptions-item>
+          <el-descriptions-item label="留言时间">{{ rootChildData.createTime }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+
+      <!-- 子留言：列表 -->
+      <el-table v-else :data="rootChildList" border stripe>
+        <el-table-column label="编号" prop="id" width="60"/>
+        <el-table-column label="内容">
+          <template slot-scope="scope">
+            <div v-html="scope.row.content" style="white-space:pre-wrap;"></div>
+          </template>
+        </el-table-column>
+        <el-table-column label="留言人" prop="createBy" width="100"/>
+        <el-table-column label="留言时间" prop="createTime" width="150"/>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import {listComment, getComment, delComment, addComment, updateComment,auditCommentSuccess,auditCommentFail} from "@/api/project/comment"
+import {
+  listComment,
+  getComment,
+  delComment,
+  addComment,
+  updateComment,
+  auditCommentSuccess,
+  auditCommentFail,
+  listChildComment
+} from "@/api/project/comment";
 
 export default {
   name: "Comment",
@@ -271,7 +306,11 @@ export default {
       ],
       viewOpen: false,
       viewForm: {},
-      auditLoading: false    // 审核按钮 loading
+      auditLoading: false,    // 审核按钮 loading
+      rootChildOpen: false,   // 根/子留言弹窗
+      rootChildTitle: '',     // 弹窗标题
+      rootChildData: {},      // 单条根留言
+      rootChildList: []       // 子留言列表
 
     }
   },
@@ -314,6 +353,7 @@ export default {
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1
+      console.log(this.queryParams);
       this.getList()
     },
     /** 重置按钮操作 */
@@ -366,7 +406,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除留言板编号为"' + ids + '"的数据项？').then(function () {
+      this.$modal.confirm('是否确认删除留言板编号为"' + ids + '"的数据项？如删除根留言会导致子留言也被删除！！！！').then(function () {
         return delComment(ids)
       }).then(() => {
         this.getList()
@@ -387,7 +427,7 @@ export default {
           this.getList();
         }).catch(() => {
         });
-      }else{
+      } else {
         auditCommentFail(data).then(() => {
           this.$modal.msgSuccess('审核不通过');
           this.getList();
@@ -398,6 +438,25 @@ export default {
       this.viewOpen = false;
       this.auditLoading = false;
 
+    },
+
+    /** 查看根留言 或 查看子留言 */
+    handleViewRootOrChildren(row) {
+      if (row.root === '1') {
+        // 根留言 ⇒ 查所有子留言
+        this.rootChildTitle = '子留言列表';
+        listChildComment({preId: row.id}).then(res => {
+          this.rootChildList = res.data;
+          this.rootChildOpen = true;
+        });
+      } else {
+        // 子留言 ⇒ 查根留言
+        this.rootChildTitle = '根留言详情';
+        getComment(row.preId).then(res => {
+          this.rootChildData = res.data;
+          this.rootChildOpen = true;
+        });
+      }
     },
 
     /** 导出按钮操作 */

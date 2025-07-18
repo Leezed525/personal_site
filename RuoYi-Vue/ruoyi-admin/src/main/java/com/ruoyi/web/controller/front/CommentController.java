@@ -10,11 +10,9 @@ import com.ruoyi.lee.enums.LeeArticleRootEnum;
 import com.ruoyi.lee.enums.LeeCommentStatusEnums;
 import com.ruoyi.lee.service.ILeeCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -37,7 +35,7 @@ public class CommentController extends BaseController {
 
     @GetMapping("/listChildComment")
     public AjaxResult listChildComment(LeeComment leeComment) {
-        List<LeeComment> list = commentService.listChildComment(leeComment);
+        List<LeeComment> list = commentService.listFrontChildComment(leeComment);
         return AjaxResult.success(list);
     }
 
