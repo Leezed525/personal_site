@@ -69,7 +69,11 @@
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="项目名称" align="center" prop="title"/>
       <el-table-column label="项目描述" align="center" prop="description"/>
-      <el-table-column label="状态" align="center" prop="status"/>
+      <el-table-column label="状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.site_project_status" :value="scope.row.status"/>
+        </template>
+      </el-table-column>
       <el-table-column label="项目链接" align="center" prop="link">
         <template slot-scope="scope">
           <a :href="scope.row.link" target="_blank" class="link-text">
@@ -130,6 +134,16 @@
         <el-form-item label="项目图片" prop="image">
           <el-input v-model="form.image" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
+        <el-form-item label="项目状态" prop="status">
+          <el-select v-model="form.status" placeholder="请选择状态">
+            <el-option
+              v-for="item in dict.type.site_project_status"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
@@ -147,6 +161,7 @@ import {listProject, getProject, delProject, addProject, updateProject} from "@/
 
 export default {
   name: "Project",
+  dicts: ['site_project_status'],
   data() {
     return {
       // 遮罩层
@@ -303,3 +318,15 @@ export default {
   }
 }
 </script>
+
+
+<style scoped>
+.link-text {
+  color: #409EFF;
+  text-decoration: none;
+}
+
+.link-text:hover {
+  text-decoration: underline;
+}
+</style>

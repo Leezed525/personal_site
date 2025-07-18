@@ -21,13 +21,13 @@ public enum LeeProjectStatusEnums {
     ;
 
 
-    private final int status;
+    private final long status;
 
     LeeProjectStatusEnums(int status) {
         this.status = status;
     }
 
-    public int getStatus() {
+    public long getStatus() {
         return status;
     }
 }
