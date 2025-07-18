@@ -8,8 +8,7 @@ public enum LeeArticleStatusEnums {
     DELETED(-1L);
 
     private final Long status;
-
-
+    
     LeeArticleStatusEnums(Long status) {
         this.status = status;
     }

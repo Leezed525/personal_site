@@ -40,7 +40,7 @@ public class LeeArticleServiceImpl extends ServiceImpl<LeeArticleMapper, LeeArti
         LambdaQueryWrapper<LeeArticle> queryWrapper = new LambdaQueryWrapper<LeeArticle>();
         //如果leeArticle中的category不为空
         queryWrapper.eq(leeArticle.getCategory() != null, LeeArticle::getCategory, leeArticle.getCategory());
-        queryWrapper.eq(LeeArticle::getStatus, LeeArticleStatusEnums.PUBLISHED);
+        queryWrapper.eq(LeeArticle::getStatus, LeeArticleStatusEnums.PUBLISHED.getStatus());
         return baseMapper.selectList(queryWrapper);
     }
 
