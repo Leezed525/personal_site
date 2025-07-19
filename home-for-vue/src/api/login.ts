@@ -34,3 +34,7 @@ export const register = (data: any) => {
   return axios.post<any>("/front/user/register", data);
 }
 
+export const resetPwd = (data: any) => {
+  return axios.put<any>("/front/user/resetPwd", data);
+}
+

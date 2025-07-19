@@ -28,7 +28,6 @@ export const useAuthStore = defineStore(
       if (!token.value) return
       try {
         const data: any = await getInfo();
-        console.log(data);
         //获取关键信息 用户名，昵称
         const userInfo: any = {
           id: data.user.userId,
@@ -37,7 +36,6 @@ export const useAuthStore = defineStore(
           nickname: data.user.nickName,
         }
         user.value = userInfo
-        console.log(user.value);
       } catch (e) {
         // token 失效、被顶下线等
         logoutUser()
