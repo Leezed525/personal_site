@@ -18,6 +18,21 @@ const projectsList = ref(projects);
 const toolsList = ref(tools);
 
 // --------------------------项目部分逻辑代码----------------------------
+
+const PROJECT_STATUS = {
+  0: {label: '规划中', color: 'gray', linkable: false},
+  1: {label: '开发中', color: 'yellow', linkable: true},
+  2: {label: '已完成', color: 'green', linkable: true},
+}
+
+// 颜色 → Tailwind 类名
+const STATUS_CLASSES: Record<string, string> = {
+  green: 'bg-green-100/80 text-green-800 dark:bg-green-900/80 dark:text-green-100',
+  yellow: 'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/80 dark:text-yellow-100',
+  gray:   'bg-gray-100/80 text-gray-800 dark:bg-gray-900/80 dark:text-gray-100',
+}
+
+
 const getProject = () => {
   listProject({}).then((res) => {
     projectsList.value = res.data;
@@ -111,18 +126,15 @@ onMounted(() => {
                 class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
               >
                 <a
-                  v-if="project.link && project.status === 'completed'"
+                  v-if="project.link && PROJECT_STATUS[project.status]?.linkable"
                   :href="project.link"
                   target="_blank"
                   class="px-8 py-3 bg-white/20 hover:bg-white/30 rounded-full transition-all duration-300 text-white font-medium hover:scale-105 hover:shadow-lg backdrop-blur-sm"
                 >
                   访问项目
                 </a>
-                <span
-                  v-if="project.status !== 'completed'"
-                  class="px-8 py-3 bg-white/20 rounded-full text-white backdrop-blur-sm"
-                >
-                  {{ project.status === "developing" ? "开发中" : "规划中" }}
+                <span v-if="!PROJECT_STATUS[project.status]?.linkable">
+                  {{ PROJECT_STATUS[project.status]?.label }}
                 </span>
               </div>
             </div>
@@ -133,22 +145,9 @@ onMounted(() => {
                 </h3>
                 <span
                   class="text-sm px-2 py-1 rounded"
-                  :class="{
-                    'bg-green-100/80 text-green-800 dark:bg-green-900/80 dark:text-green-100':
-                      project.status === 'completed',
-                    'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/80 dark:text-yellow-100':
-                      project.status === 'developing',
-                    'bg-gray-100/80 text-gray-800 dark:bg-gray-900/80 dark:text-gray-100':
-                      project.status === 'planning',
-                  }"
+                  :class="STATUS_CLASSES[PROJECT_STATUS[project.status]?.color]"
                 >
-                  {{
-                    project.status === "completed"
-                      ? "已完成"
-                      : project.status === "developing"
-                        ? "开发中"
-                        : "规划中"
-                  }}
+                    {{ PROJECT_STATUS[project.status]?.label }}
                 </span>
               </div>
               <p class="text-gray-600 dark:text-gray-400 mb-4 flex-1">
