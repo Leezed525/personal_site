@@ -26,24 +26,24 @@ import com.ruoyi.common.core.page.TableDataInfo;
 
 /**
  * 项目Controller
- * 
+ *
  * @author ruoyi
  * @date 2025-07-18
  */
 @RestController
 @RequestMapping("/LeeSite/project")
-public class LeeProjectController extends BaseController
-{
+public class LeeProjectController extends BaseController {
     @Autowired
     private ILeeProjectService leeProjectService;
+
+    private final static int DEFAULT_ORDER_NUM = 20;
 
     /**
      * 查询项目列表
      */
     @PreAuthorize("@ss.hasPermi('LeeSite:project:list')")
     @GetMapping("/list")
-    public TableDataInfo list(LeeProject leeProject)
-    {
+    public TableDataInfo list(LeeProject leeProject) {
         startPage();
         List<LeeProject> list = leeProjectService.selectLeeProjectList(leeProject);
         return getDataTable(list);
@@ -55,8 +55,7 @@ public class LeeProjectController extends BaseController
     @PreAuthorize("@ss.hasPermi('LeeSite:project:export')")
     @Log(title = "项目", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, LeeProject leeProject)
-    {
+    public void export(HttpServletResponse response, LeeProject leeProject) {
         List<LeeProject> list = leeProjectService.selectLeeProjectList(leeProject);
         ExcelUtil<LeeProject> util = new ExcelUtil<LeeProject>(LeeProject.class);
         util.exportExcel(response, list, "项目数据");
@@ -67,8 +66,7 @@ public class LeeProjectController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('LeeSite:project:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return success(leeProjectService.getById(id));
     }
 
@@ -78,8 +76,10 @@ public class LeeProjectController extends BaseController
     @PreAuthorize("@ss.hasPermi('LeeSite:project:add')")
     @Log(title = "项目", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody LeeProject leeProject)
-    {
+    public AjaxResult add(@RequestBody LeeProject leeProject) {
+        if (leeProject.getOrderNum() == null) {
+            leeProject.setOrderNum(DEFAULT_ORDER_NUM);
+        }
         return toAjax(leeProjectService.saveOrUpdate(leeProject));
     }
 
@@ -89,8 +89,7 @@ public class LeeProjectController extends BaseController
     @PreAuthorize("@ss.hasPermi('LeeSite:project:edit')")
     @Log(title = "项目", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody LeeProject leeProject)
-    {
+    public AjaxResult edit(@RequestBody LeeProject leeProject) {
         return toAjax(leeProjectService.saveOrUpdate(leeProject));
     }
 
@@ -99,9 +98,8 @@ public class LeeProjectController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('LeeSite:project:remove')")
     @Log(title = "项目", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(leeProjectService.removeByIds(Arrays.asList(ids)));
     }
 }

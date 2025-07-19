@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import {ref, computed} from "vue";
+import {ref, computed, onMounted} from "vue";
 import PageTransition from "@/components/PageTransition.vue";
 import Tabs from "@/components/ui/Tabs.vue";
 import BookmarksView from "@/views/tools/BookmarksView.vue";
+import {listProject} from "@/api/project/project";
 import {projects} from "@/config/projects";
 import {tools} from "@/config/tools";
 import {tabs} from "@/config/navigation";
@@ -10,8 +11,21 @@ import {tabs} from "@/config/navigation";
 const activeTab = ref("projects");
 const activeToolId = ref<number | null>(null);
 
+// 加载状态
+const isLoading = ref(false);
+
 const projectsList = ref(projects);
 const toolsList = ref(tools);
+
+// --------------------------项目部分逻辑代码----------------------------
+const getProject = () => {
+  listProject({}).then((res) => {
+    projectsList.value = res.data;
+    console.log(res);
+    isLoading.value = false;
+  }).catch();
+
+}
 
 const activeTool = computed(() =>
   toolsList.value.find((tool) => tool.id === activeToolId.value),
@@ -21,8 +35,6 @@ const showToolList = () => {
   activeToolId.value = null;
 };
 
-// 加载状态
-const isLoading = ref(false);
 
 // 模拟加载效果
 const handleTabChange = async () => {
@@ -33,6 +45,13 @@ const handleTabChange = async () => {
 
 // 页面切换动画延迟
 const getTransitionDelay = (index: number) => `${index * 100}ms`;
+
+// -------------------------onMounted--------------------------------
+onMounted(() => {
+  isLoading.value = true;
+  // 初始化项目列表
+  getProject();
+});
 </script>
 
 <template>

@@ -144,6 +144,9 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item label="排序" prop="orderNum">
+          <el-input v-model="form.orderNum" type="number" placeholder="请输入排序"/>
+        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
         </el-form-item>

@@ -5,7 +5,6 @@ import com.ruoyi.common.core.domain.LeeBaseEntity;
 import lombok.Data;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.annotation.Excel;
-import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
  * 项目对象 lee_project
@@ -43,4 +42,7 @@ public class LeeProject extends LeeBaseEntity
     @Excel(name = "项目图片")
     private String image;
 
+    /** 项目排序 */
+    @Excel(name = "项目排序")
+    private Integer orderNum;
 }
