@@ -6,12 +6,16 @@ import ThemeToggle from "@/components/ThemeToggle.vue";
 import LoginModal from "@/components/layout/LoginModal.vue";
 import {useAuthStore} from "@/store/auth";
 import {storeToRefs} from 'pinia'
+import ChangePwdModal from "@/components/layout/ChangePwdModal.vue";
 
 // 用户信息
 const auth = useAuthStore();
 
 /* 登录态 */
 const {isLoggedIn, user} = storeToRefs(auth)
+
+/* 修改密码弹窗控制 */
+const showPwdModal = ref(false)
 
 /* 弹窗控制 */
 const showLoginModal = ref(false);
@@ -161,15 +165,13 @@ const showUserMenu = ref(false);
                 @mouseleave="showUserMenu = false"
               >
                 <button
-                  class="block w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg"
+                  @click="showPwdModal = true"
+                  class="block w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   修改密码
                 </button>
                 <button
-                  class="block w-full text-left px-3 py-2 text-sm
-               text-gray-700 dark:text-gray-200
-               hover:bg-gray-100 dark:hover:bg-gray-700
-               first:rounded-t-lg last:rounded-b-lg"
+                  class="block w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200  hover:bg-gray-100 dark:hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg"
                   @click="logout"
                 >
                   退出登录
@@ -255,6 +257,7 @@ const showUserMenu = ref(false);
                 </div>
               </div>
               <button
+                @click="showPwdModal = true"
                 class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 修改密码
@@ -275,6 +278,12 @@ const showUserMenu = ref(false);
       v-model:type="modalType"
       @close="closeLoginModal"
       @success="handleLogin"
+    />
+    <!-- 放在最底部，跟 LoginModal 同级 -->
+    <ChangePwdModal
+      v-if="showPwdModal"
+      @close="showPwdModal = false"
+      @success="showPwdModal = false"
     />
   </header>
 </template>

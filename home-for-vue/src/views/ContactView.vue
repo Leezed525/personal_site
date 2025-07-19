@@ -120,8 +120,6 @@ const closeReplyModal = () => {
 
 const submitReply = async (preid) => {
   if (!replyText.value.trim()) return;
-  console.log(preid);
-  console.log(replyText.value);
   const data = {
     preId: preid,
     content: replyText.value,
@@ -153,7 +151,6 @@ async function getList() {
     totalArticles = data.total;
     totalPages = Math.ceil(data.total / postsPerPage);
     posts = data.rows;
-    console.log(posts);
   } catch (e) {
     error.value = e instanceof Error ? e.message : "获取博客文章失败";
   } finally {

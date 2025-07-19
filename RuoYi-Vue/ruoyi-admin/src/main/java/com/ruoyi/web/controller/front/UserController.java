@@ -11,11 +11,9 @@ import com.ruoyi.framework.web.service.EmailService;
 import com.ruoyi.lee.domain.DTO.RegisterUserDTO;
 import com.ruoyi.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/front/user")
@@ -58,5 +56,21 @@ public class UserController extends BaseController {
         return toAjax(userService.insertUser(user));
     }
 
-
+    /**
+     * 重置密码
+     */
+    @Log(title = "用户管理", businessType = BusinessType.UPDATE)
+    @PutMapping("/resetPwd")
+    public AjaxResult resetPwd(@RequestBody SysUser user)
+    {
+//        userService.checkUserAllowed(user);
+//        userService.checkUserDataScope(user.getUserId());
+        String username = SecurityUtils.getUsername();
+        if (!username.equals(user.getUserName())) {
+            return error("只能重置自己的密码");
+        }
+        user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
+        user.setUpdateBy(username);
+        return toAjax(userService.resetPwd(user));
+    }
 }

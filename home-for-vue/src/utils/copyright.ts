@@ -20,7 +20,6 @@ export const createCopyrightGuard = (() => {
       () => element.textContent?.includes("©"),
       () => element.textContent?.includes("Handsome"),
       () => element.textContent?.includes("All rights"),
-      () => element.querySelector("a")?.href.includes("mmm.sd"),
       () => !element.textContent?.includes("Modified"),
       () => element.children.length >= 3,
     ];

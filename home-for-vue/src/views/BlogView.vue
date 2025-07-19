@@ -88,7 +88,6 @@ async function getList(){
     totalPages = Math.ceil(data.total / postsPerPage);
     posts = data.rows;
     posts = fillImageUrl(posts);
-    console.log(posts);
   } catch (e) {
     error.value = e instanceof Error ? e.message : "获取博客文章失败";
   } finally {

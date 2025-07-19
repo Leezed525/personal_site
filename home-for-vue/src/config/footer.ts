@@ -24,12 +24,12 @@ export const footerConfig: FooterConfig = {
 
     {
       text: "博客",
-      href: "https://www.mmm.sd",
+      href: "https://blog.csdn.net/Leezed525?spm=1010.2135.3001.5343",
       target: "_blank",
     },
     {
       text: "GitHub",
-      href: "https://github.com/acanyo",
+      href: "https://github.com/Leezed525",
       target: "_blank",
     },
   ],

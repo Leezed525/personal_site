@@ -36,7 +36,6 @@ const STATUS_CLASSES: Record<string, string> = {
 const getProject = () => {
   listProject({}).then((res) => {
     projectsList.value = res.data;
-    console.log(res);
     isLoading.value = false;
   }).catch();
 
