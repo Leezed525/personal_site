@@ -105,6 +105,14 @@ export default defineConfig({
           "Pragma": "no-cache"
         },
       },
+      "/LeeSiteApi": {
+        // 你的后端 API 实际地址
+        target: "http://localhost:8080", // 或者你的后端服务IP:端口
+        changeOrigin: true, // 开启跨域
+        // 如果后端 API 不包含 /LeeSiteApi 前缀，需要重写路径
+        // 例如：前端请求 /LeeSiteApi/users，后端实际处理 /users
+        rewrite: (path) => path.replace(/^\/LeeSiteApi/, ''),
+      },
     },
   },
   define: {

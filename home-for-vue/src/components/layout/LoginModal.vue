@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, onMounted, computed, watch, nextTick} from 'vue';
+import {ref, onMounted, computed, watch} from 'vue';
 import {getCaptcha} from "../../api/captcha";
 import {LoginReqBody} from "../../types/login";
 import {login, getEmailCode, register} from "../../api/login";
@@ -51,7 +51,7 @@ const fetchCaptcha = async () => {
     console.error('获取验证码失败', e);
   }
 };
-const uuid = ref<string | null>();
+const uuid = ref<string | null>(null);
 const captcha = ref<string | null>(null);
 const refreshCaptcha = () => fetchCaptcha();
 
@@ -64,7 +64,7 @@ const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const emailError = ref('')
 watch(
   () => registerForm.value.email,
-  (val) => {
+  (val: string) => {
     if (!val) {
       emailError.value = ''
     } else if (!emailReg.test(val)) {
@@ -94,7 +94,7 @@ const sendEmailCode = async () => {
         if (res.lastTime) {
           emailCoolDown.value = res.lastTime;  // 如果接口返回了冷却时间，使用它
           ElMessage.warning("请稍后再请求");
-        }else{
+        } else {
           //默认冷却60秒
           emailCoolDown.value = 60;
           ElMessage.success('验证码已发送，请查收邮箱');

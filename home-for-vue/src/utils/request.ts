@@ -1,4 +1,5 @@
-import axios, {AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios'
+import axios from 'axios';
+import type { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import {ElMessage} from 'element-plus'
 // 数据返回的接口
 // 定义请求响应参数，不含data
@@ -12,7 +13,7 @@ interface ResultData<T = any> extends Result {
   data?: T;
 }
 
-const URL: string = 'http://localhost:8080'
+const URL: string = '/LeeSiteApi'
 
 enum RequestEnums {
   TIMEOUT = 20000,

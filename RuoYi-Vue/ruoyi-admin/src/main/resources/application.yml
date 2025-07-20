@@ -2,4 +2,5 @@ spring:
   profiles:
     active: dev
     group:
-        dev: common,druiddev
+        dev: common,dev,druiddev
+        prod: common,prod,druidprod
