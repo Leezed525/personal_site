@@ -55,4 +55,9 @@ public class CacheConstants {
      * page view redis Key
      */
     public static final String PV_PREFIX_KEY = "PV:";
+
+    /**
+     * unique visitor redis Key
+     */
+    public static final String UV_PREFIX_KEY = "UV:";
 }

@@ -36,6 +36,26 @@ public class RedisCache {
     }
 
     /**
+     * 添加元素到HyperLogLog
+     *
+     * @param key   key
+     * @param value value
+     */
+    public void insertHyperLog(final String key, final String value) {
+        redisTemplate.opsForHyperLogLog().add(key, value);
+    }
+
+
+    /**
+     * 获取HyperLogLog的基数
+     *
+     * @param key key
+     */
+    public void getHyperLogSize(final String key) {
+        redisTemplate.opsForHyperLogLog().size(key);
+    }
+
+    /**
      * 缓存基本的对象，Integer、String、实体类等
      *
      * @param key   缓存的键值

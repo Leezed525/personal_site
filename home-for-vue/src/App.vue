@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
-import { useRoute, useRouter, type RouteMeta } from "vue-router";
-import { RouterView } from "vue-router";
+import {ref, watch, onMounted} from "vue";
+import {useRoute, useRouter, type RouteMeta} from "vue-router";
+import {RouterView} from "vue-router";
 import TheHeader from "./components/layout/TheHeader.vue";
 import TheFooter from "./components/layout/TheFooter.vue";
 import PageTransition from "./components/PageTransition.vue";
 import Toast from "./components/ui/Toast.vue";
 import Modal from "./components/ui/Modal.vue";
-import { noticeConfig } from "./config/notice";
-import type { NoticeButton } from "./types/notice";
-import { siteConfig } from "./config/site";
-import { siteInfo } from "./config/site-info";
-import { printConsoleInfo } from "@/utils/console";
+import {noticeConfig} from "./config/notice";
+import type {NoticeButton} from "./types/notice";
+import {siteConfig} from "./config/site";
+import {siteInfo} from "./config/site-info";
+import {printConsoleInfo} from "@/utils/console";
+
+// pv uv 相关请求
+import {pageView, uniqueView} from "@/api/view";
 
 const route = useRoute();
 const router = useRouter();
@@ -128,6 +131,10 @@ onMounted(() => {
     version: siteInfo.version,
     link: siteInfo.link,
   });
+  // 记录页面访问
+  pageView();
+  // 记录uv
+  uniqueView();
 });
 </script>
 
@@ -143,16 +150,16 @@ onMounted(() => {
       </button>
     </div>
 
-    <TheHeader />
+    <TheHeader/>
     <main class="flex-grow pt-16 md:pt-20">
       <router-view v-slot="{ Component }">
         <PageTransition :name="(route.meta.transition as string) || 'fade'">
-          <component :is="Component" />
+          <component :is="Component"/>
         </PageTransition>
       </router-view>
     </main>
-    <TheFooter />
-    <Toast />
+    <TheFooter/>
+    <Toast/>
     <Modal
       v-model:show="showNotice"
       :title="noticeConfig.title"
