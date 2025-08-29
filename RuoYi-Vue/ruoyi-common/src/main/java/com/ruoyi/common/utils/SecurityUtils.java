@@ -175,4 +175,12 @@ public class SecurityUtils
                 .anyMatch(x -> Constants.SUPER_ADMIN.equals(x) || PatternMatchUtils.simpleMatch(x, role));
     }
 
+    public static void main(String[] args) {
+        System.out.println(SecurityUtils.encryptPassword("admin123"));
+        System.out.println(SecurityUtils.encryptPassword("天上游龙水中蛟，不羡高飞入云霄。"));
+        System.out.println(SecurityUtils.encryptPassword("生来无事终天笑，未曾到老先弯腰。"));
+    }
+
+
+
 }
