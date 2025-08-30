@@ -17,34 +17,47 @@ import lombok.experimental.Accessors;
 @Data
 @TableName("lee_article")
 @Accessors(chain = true)
-public class LeeArticle extends LeeBaseEntity
-{
+public class LeeArticle extends LeeBaseEntity {
     private static final long serialVersionUID = 1L;
 
-    /** id */
+    /**
+     * id
+     */
     private Long id;
 
-    /** 博客标题 */
+    /**
+     * 博客标题
+     */
     @Excel(name = "博客标题")
     private String title;
 
-    /** 博客url */
+    /**
+     * 博客url
+     */
     @Excel(name = "博客url")
     private String url;
 
-    /** 博客封面url */
+    /**
+     * 博客封面url
+     */
     @Excel(name = "博客封面url")
     private String cover;
 
-    /** 博客摘要 */
+    /**
+     * 博客摘要
+     */
     @Excel(name = "博客摘要")
     private String summary;
 
-    /** 博客分类 */
+    /**
+     * 博客分类
+     */
     @Excel(name = "博客分类")
     private String category;
 
-    /** 状态 */
+    /**
+     * 状态
+     */
     @Excel(name = "状态")
     private Long status;
 

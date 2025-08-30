@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.data.redis.core.HashOperations;
@@ -51,8 +52,8 @@ public class RedisCache {
      *
      * @param key key
      */
-    public void getHyperLogSize(final String key) {
-        redisTemplate.opsForHyperLogLog().size(key);
+    public Long getHyperLogSize(final String key) {
+        return redisTemplate.opsForHyperLogLog().size(key);
     }
 
     /**
@@ -273,5 +274,10 @@ public class RedisCache {
      */
     public Collection<String> keys(final String pattern) {
         return redisTemplate.keys(pattern);
+    }
+
+    public Boolean setCacheObjectIfAbsent(String key, String value, long expireTime) {
+        Boolean success = redisTemplate.opsForValue().setIfAbsent(key, value, expireTime, TimeUnit.SECONDS);
+        return success != null && success;
     }
 }
