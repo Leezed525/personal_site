@@ -11,12 +11,12 @@ ruoyi:
   # 验证码类型 math 数字计算 char 字符验证
   captchaType: math
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: D:/ruoyi/uploadPath
+  profile: /home/ruoyi/uploadPath
 
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 8080
+  port: 10525
   tomcat:
     # tomcat的URI编码
     uri-encoding: UTF-8
