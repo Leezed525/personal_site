@@ -251,6 +251,7 @@
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
         <module>lee-site</module>
+        <module>lee-task</module>
     </modules>
     <packaging>pom</packaging>
 
