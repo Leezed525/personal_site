@@ -17,7 +17,8 @@ export const siteConfig = {
       // "haimeng": "https://cdn.picui.cn/vip/2025/07/11/6870a5bb675b9.png", //喜多川海梦，慢
       // "haimeng": "https://i0.hdslb.com/bfs/openplatform/007ec656f7b1be0b0259e5162e83fbad559a0c53.jpg", //喜多川海梦，bilibili,好像不接受外链
       // "haimeng": "https://pic1.imgdb.cn/item/6870a77a58cb8da5c89b6478.jpg", //喜多川海梦，适中
-      "haimeng": "https://tc.z.wiki/autoupload/f/p1xbiZaWAoHAPXZdQlp9qcwntDfOTgKSzo0g8H84d86yl5f0KlZfm6UsKj-HyTuv/20250711/UU0j/527X519/compressed_%E5%96%9C%E5%A4%9A%E5%B7%9D%E6%B5%B7%E6%A2%A6_resized.png", //喜多川海梦，适中
+      // "haimeng": "https://tc.z.wiki/autoupload/f/p1xbiZaWAoHAPXZdQlp9qcwntDfOTgKSzo0g8H84d86yl5f0KlZfm6UsKj-HyTuv/20250711/UU0j/527X519/compressed_%E5%96%9C%E5%A4%9A%E5%B7%9D%E6%B5%B7%E6%A2%A6_resized.png", //喜多川海梦，适中
+      "haimeng": "https://lee-site-resource.tos-cn-beijing.volces.com/site_avatar.png", // 对象存储
     },// 个人头像
     ogImage: "https://www.mmm.sd/upload/logo.png", // 社交分享图片
   },
