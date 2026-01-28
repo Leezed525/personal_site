@@ -12,6 +12,8 @@ ruoyi:
   captchaType: math
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
   profile: D:/ruoyi/uploadPath
+  # 验证码开关
+  captchaEnabled: false
 
 # 开发环境配置
 server:

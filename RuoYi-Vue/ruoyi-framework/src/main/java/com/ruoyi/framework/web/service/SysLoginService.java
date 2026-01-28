@@ -2,6 +2,7 @@ package com.ruoyi.framework.web.service;
 
 import javax.annotation.Resource;
 
+import com.ruoyi.common.config.RuoYiConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -51,6 +52,8 @@ public class SysLoginService {
 
     @Autowired
     private ISysConfigService configService;
+    @Autowired
+    private RuoYiConfig ruoYiConfig;
 
     /**
      * 登录验证
@@ -101,6 +104,7 @@ public class SysLoginService {
      */
     public void validateCaptcha(String username, String code, String uuid) {
         boolean captchaEnabled = configService.selectCaptchaEnabled();
+        System.out.println("!!!!!!!!!!!!!!!!captchaEnabled=" + captchaEnabled);
         if (captchaEnabled) {
             String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");
             String captcha = redisCache.getCacheObject(verifyKey);
