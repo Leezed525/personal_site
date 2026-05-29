@@ -1,25 +1,72 @@
 package com.ruoyi.lee.domain;
 
+import com.ruoyi.lee.enums.ConcurrencyMode;
+import com.ruoyi.lee.enums.DefinitionStatus;
+import com.ruoyi.lee.enums.ExecutorType;
+import com.ruoyi.lee.enums.ScheduleType;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import lombok.Data;
-import org.quartz.JobDataMap;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 @Data
+@NoArgsConstructor
+@Accessors(chain = true)
 public class TaskDefinition {
-    private String taskId;                    // 业务ID（对应Quartz JobKey）
-    private String taskName;
-    private TaskType type;          // 任务类型
-    private TaskManner manner;    // 任务方式
-//    private SchedulingPolicy scheduling;     // 调度策略
-//    private TaskPayload payload;             // 任务负载（参数）
-//    private RetryPolicy retryPolicy;         // 重试策略（当scheduling为可重试时）
 
-    // 转换为Quartz的JobDataMap
-    public JobDataMap toJobDataMap() {
-        JobDataMap map = new JobDataMap();
-        map.put("TASK_DEFINITION", this);
-//        map.put("INTENT", intent.name());
-//        map.put("MECHANISM", mechanism.getType());
-        map.put("RETRY_COUNT", 0);
-        return map;
-    }
+	private String id;
+
+	private String name;
+
+	private String description;
+
+	/** REUSABLE / ONESHOT */
+	private com.ruoyi.lee.enums.TaskType taskType;
+
+	/** CRON / FIXED_RATE / FIXED_DELAY / NONE */
+	private ScheduleType scheduleType;
+
+	private String cronExpression;
+
+	/** HTTP_REQUEST / LOCAL_SCRIPT */
+	private ExecutorType executorType;
+
+	/** Parsed runtime config for executor */
+	private Map<String, Object> executorConfig;
+
+	/** ENABLED / DISABLED / ARCHIVED */
+	private DefinitionStatus status;
+
+	private Map<String, Object> preOpConfig;
+
+	private Map<String, Object> postOpConfig;
+
+	private Map<String, Object> exceptionHandlerConfig;
+
+	private Map<String, Object> loggerConfig;
+
+	private Map<String, Object> retryPolicy;
+
+	private Integer timeoutSeconds;
+
+	private ConcurrencyMode concurrencyMode;
+
+	private Integer priority;
+
+	/** Parsed tags list, used by service-side filtering */
+	private List<String> tags;
+
+	private String createBy;
+
+	private LocalDateTime createTime;
+
+	private LocalDateTime updateTime;
+
+	private String updateBy;
+
+	private String remark;
+
+
 }
