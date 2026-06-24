@@ -18,7 +18,7 @@ public class TaskInstance {
     private String id;
 
     /** 所属任务定义 ID */
-    private String definitionId;
+    private TaskDefinition definition;
 
     /** SCHEDULED / MANUAL / API */
     private TriggerType triggerType;

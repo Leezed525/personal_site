@@ -1,6 +1,8 @@
 package com.ruoyi.lee.domain.vo;
 
 import java.time.LocalDateTime;
+
+import com.ruoyi.lee.domain.TaskDefinition;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -15,7 +17,7 @@ public class TaskInstanceVO {
 
     private String id;
 
-    private String definitionId;
+    private TaskDefinitionVO definitionId;
 
     private String triggerType;
 
