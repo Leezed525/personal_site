@@ -39,6 +39,8 @@ public class TaskDefinition {
 	/** ENABLED / DISABLED / ARCHIVED */
 	private DefinitionStatus status;
 
+
+    // 任务实例前置操作相关配置，例如前置操作策略名，前置策略操作
 	private Map<String, Object> preOpConfig;
 
 	private Map<String, Object> postOpConfig;
