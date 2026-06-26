@@ -3,12 +3,11 @@ package com.ruoyi.lee.executor;
 import com.ruoyi.common.enums.HttpMethod;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Data
-public class HTTPRequest implements BaseExecutor {
+public class HTTPRequestExecutor implements BaseExecutor {
     // 请求方法 （GET,POST,PUT,DELETE,PATCH）
     private HttpMethod httpMethod;
 

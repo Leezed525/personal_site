@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public class LocalScript implements BaseExecutor {
+public class LocalScriptExecutor implements BaseExecutor {
 
     // 运行脚本类型
     private ScriptType scriptType;
