@@ -6,9 +6,14 @@ public abstract class AbstractTaskExecutor<C extends ExecutorConfig> implements 
 
     @Override
     public String execute(ExecutorConfig executorConfig) throws Exception {
+        // 校验config是否合理
         C typedConfig = castConfig(executorConfig);
         validateConfig(typedConfig);
-        return doExecute(typedConfig);
+
+        // 前置操作
+        doExecute(typedConfig);
+        // 后置操作
+        return "success";
     }
 
     @SuppressWarnings("unchecked")

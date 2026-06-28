@@ -50,14 +50,11 @@ public final class TaskExecutorFactory {
             throw new IllegalArgumentException("executorType can not be null");
         }
 
-        switch (executorType) {
-            case HTTP_REQUEST:
-                return HttpRequestExecutorConfig.fromMap(safeConfig);
-            case LOCAL_SCRIPT:
-                return LocalScriptExecutorConfig.fromMap(safeConfig);
-            default:
-                throw new IllegalArgumentException("Unsupported executor type: " + executorType);
-        }
+        return switch (executorType) {
+            case HTTP_REQUEST -> HttpRequestExecutorConfig.fromMap(safeConfig);
+            case LOCAL_SCRIPT -> LocalScriptExecutorConfig.fromMap(safeConfig);
+            default -> throw new IllegalArgumentException("Unsupported executor type: " + executorType);
+        };
     }
 
 
