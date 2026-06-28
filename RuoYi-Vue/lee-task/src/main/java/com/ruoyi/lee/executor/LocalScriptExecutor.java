@@ -1,41 +1,31 @@
 package com.ruoyi.lee.executor;
 
-import com.ruoyi.lee.enums.ScriptType;
-import lombok.Data;
+import com.ruoyi.lee.enums.ExecutorType;
+import com.ruoyi.lee.executor.config.LocalScriptExecutorConfig;
 
-import java.util.List;
-import java.util.Map;
-
-@Data
-public class LocalScriptExecutor implements BaseExecutor {
-
-    // 运行脚本类型
-    private ScriptType scriptType;
-
-    // 脚本路径
-    private String scriptPath;
-
-    // 脚本参数
-    private List<String> scriptArgs;
-
-    // 工作路径
-    private String workDir;
-
-    // 环境变量
-    private Map<String, String> environmentVars;
-
-    // 是否捕获标准输出
-    private Boolean captureStdout = Boolean.TRUE;
-
-    // 是否捕获标准错误输出
-    private Boolean captureStderr = Boolean.TRUE;
-
-    // 判定成功过的退出码
-    private List<String> exitCodeSuccess;
+public class LocalScriptExecutor extends AbstractTaskExecutor<LocalScriptExecutorConfig> {
 
     @Override
-    public String execute() throws Exception {
-        return "Success";
+    public ExecutorType type() {
+        return ExecutorType.LOCAL_SCRIPT;
     }
 
+    @Override
+    public Class<LocalScriptExecutorConfig> configType() {
+        return LocalScriptExecutorConfig.class;
+    }
+
+    @Override
+    protected void validateConfig(LocalScriptExecutorConfig executorConfig) {
+        if (executorConfig.getScriptType() == null) {
+            throw new IllegalArgumentException("Missing required config: script_type");
+        }
+        requiredString(executorConfig.getScriptPath(), "script_path");
+    }
+
+    @Override
+    protected String doExecute(LocalScriptExecutorConfig executorConfig) {
+        return "Local script executor prepared, scriptType=" + executorConfig.getScriptType() +
+                ", scriptPath=" + executorConfig.getScriptPath();
+    }
 }
