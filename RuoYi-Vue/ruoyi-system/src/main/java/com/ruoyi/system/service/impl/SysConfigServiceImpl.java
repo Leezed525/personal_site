@@ -3,6 +3,8 @@ package com.ruoyi.system.service.impl;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.PostConstruct;
+
+import com.ruoyi.common.config.RuoYiConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.common.annotation.DataSource;
@@ -30,6 +32,8 @@ public class SysConfigServiceImpl implements ISysConfigService
 
     @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private RuoYiConfig ruoYiConfig;
 
     /**
      * 项目启动时，初始化参数到缓存
@@ -88,12 +92,13 @@ public class SysConfigServiceImpl implements ISysConfigService
     @Override
     public boolean selectCaptchaEnabled()
     {
-        String captchaEnabled = selectConfigByKey("sys.account.captchaEnabled");
-        if (StringUtils.isEmpty(captchaEnabled))
-        {
-            return true;
-        }
-        return Convert.toBool(captchaEnabled);
+        return ruoYiConfig.isCaptchaEnabled();
+//        String captchaEnabled = selectConfigByKey("sys.account.captchaEnabled");
+//        if (StringUtils.isEmpty(captchaEnabled))
+//        {
+//            return true;
+//        }
+//        return Convert.toBool(captchaEnabled);
     }
 
     /**
