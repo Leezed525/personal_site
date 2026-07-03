@@ -67,9 +67,13 @@
         </dependency>
 
         <dependency>
-            <groupId>com.ruoyi.project</groupId>
+            <groupId>com.ruoyi</groupId>
             <artifactId>lee-site</artifactId>
-            <version>3.9.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>lee-task</artifactId>
         </dependency>
 
         <!-- 测试所需 -->
