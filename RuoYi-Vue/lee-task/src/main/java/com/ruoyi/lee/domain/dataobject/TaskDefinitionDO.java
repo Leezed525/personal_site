@@ -1,5 +1,8 @@
 package com.ruoyi.lee.domain.dataobject;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,8 +11,10 @@ import lombok.experimental.Accessors;
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
+@TableName("lee_task_definition")
 public class TaskDefinitionDO {
 
+	@TableId(value = "id", type = IdType.INPUT)
 	private String id;
 
 	private String name;
