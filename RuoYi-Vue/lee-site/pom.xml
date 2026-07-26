@@ -9,7 +9,7 @@
         <version>3.9.0</version>
     </parent>
 
-    <groupId>com.ruoyi.project</groupId>
+    <groupId>com.ruoyi</groupId>
     <artifactId>lee-site</artifactId>
 
     <description>
