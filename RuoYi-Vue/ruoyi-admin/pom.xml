@@ -71,10 +71,6 @@
             <artifactId>lee-site</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.ruoyi</groupId>
-            <artifactId>lee-task</artifactId>
-        </dependency>
 
         <!-- 测试所需 -->
         <dependency>
