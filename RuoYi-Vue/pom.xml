@@ -244,11 +244,6 @@
                 <artifactId>lee-site</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.ruoyi</groupId>
-                <artifactId>lee-task</artifactId>
-                <version>${ruoyi.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -260,7 +255,6 @@
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
         <module>lee-site</module>
-        <module>lee-task</module>
     </modules>
     <packaging>pom</packaging>
 
